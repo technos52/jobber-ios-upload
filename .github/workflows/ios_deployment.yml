@@ -1,0 +1,68 @@
+name: iOS App Store Deployment
+
+on:
+  push:
+    branches: [ main, release ]
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          cache: true # Enable Flutter caching
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install Pods
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: Import Code Signing Certificates
+        uses: Apple-Actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_P12 }}
+          p12-password: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        uses: Apple-Actions/download-provisioning-profiles@v1
+        with:
+          bundle-id: 'com.shailesh.alljobopen'
+          profile-type: 'IOS_APP_STORE'
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
+
+      - name: Build iOS IPA
+        run: |
+          # Use the GitHub run number to ensure a unique, increasing build number
+          BUILD_NUMBER=$((GITHUB_RUN_NUMBER + 100)) 
+          flutter build ipa --release \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=ios/ExportOptions.plist
+
+      - name: Upload to App Store Connect
+        uses: Apple-Actions/upload-testflight-build@v1
+        with:
+          app-path: 'build/ios/ipa/*.ipa'
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
