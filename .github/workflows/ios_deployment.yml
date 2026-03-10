@@ -16,8 +16,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
-          cache: true # Enable Flutter caching
+          channel: 'stable' # Use channel instead of version string
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
