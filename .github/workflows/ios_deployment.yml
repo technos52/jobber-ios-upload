@@ -62,6 +62,12 @@ jobs:
       - name: Rename IPA
         run: mv build/ios/ipa/*.ipa build/ios/ipa/app.ipa
 
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-app-ipa
+          path: build/ios/ipa/app.ipa
+
       - name: Upload to App Store Connect
         uses: Apple-Actions/upload-testflight-build@v1
         with:

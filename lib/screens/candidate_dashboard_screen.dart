@@ -470,7 +470,7 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'All Job Open',
+                'AlljobOpen',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,

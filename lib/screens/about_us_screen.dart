@@ -57,7 +57,7 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'All Job Open',
+                    'AlljobOpen',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
@@ -84,7 +84,7 @@ class AboutUsScreen extends StatelessWidget {
             _buildSection(
               'Our Mission',
               Icons.flag_outlined,
-              'All Job Open is dedicated to simplifying the job search process for both candidates and employers. We believe in creating meaningful connections that lead to successful careers and thriving businesses.',
+              'AlljobOpen is dedicated to simplifying the job search process for both candidates and employers. We believe in creating meaningful connections that lead to successful careers and thriving businesses.',
             ),
 
             const SizedBox(height: 20),

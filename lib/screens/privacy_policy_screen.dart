@@ -79,11 +79,11 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       _buildSection('Privacy Policy', 'Last Updated: 7 / 1 / 2026'),
       _buildSection(
         '1. Introduction & Scope',
-        'Welcome to All Job Open, the simple and reliable job search application for IT and Non-IT job seekers and recruiters (the "App"). This Privacy Policy describes how All Job Open collects, uses, processes, and shares your information. It applies to all users of the App, including job seekers ("Candidates") and recruiters/companies ("Recruiters"). By using our App, you agree to the terms of this Privacy Policy.',
+        'Welcome to AlljobOpen, the simple and reliable job search application for IT and Non-IT job seekers and recruiters (the "App"). This Privacy Policy describes how AlljobOpen collects, uses, processes, and shares your information. It applies to all users of the App, including job seekers ("Candidates") and recruiters/companies ("Recruiters"). By using our App, you agree to the terms of this Privacy Policy.',
       ),
       _buildSection(
         '2. Definitions',
-        'For the purpose of this Policy:\n\nApp: Refers to the All Job Open mobile application and related services.\n\nPersonal Information (PI): Any information that relates to an identified or identifiable natural person.\n\nCandidate: An individual using the App to search for or apply to jobs.\n\nRecruiter: An individual or entity using the App to post job openings and search for Candidates.\n\nProcessing: Any operation performed on Personal Information, such as collection, recording, organization, storage, and disclosure.\n\nData Controller: All Job Open, which determines the purposes and means of processing Personal Information.',
+        'For the purpose of this Policy:\n\nApp: Refers to the AlljobOpen mobile application and related services.\n\nPersonal Information (PI): Any information that relates to an identified or identifiable natural person.\n\nCandidate: An individual using the App to search for or apply to jobs.\n\nRecruiter: An individual or entity using the App to post job openings and search for Candidates.\n\nProcessing: Any operation performed on Personal Information, such as collection, recording, organization, storage, and disclosure.\n\nData Controller: AlljobOpen, which determines the purposes and means of processing Personal Information.',
       ),
       _buildSection('3. Information We Collect', ''),
       _buildSubSection(
@@ -100,7 +100,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '5. Purpose of Data Collection',
-        'We collect and process your information for the following purposes:\n\nService Provision: To operate the App, connect Candidates with Recruiters, and manage user accounts.\n\nPersonalization: To recommend relevant jobs to Candidates and relevant Candidates to Recruiters.\n\nCommunication: To send service updates, security alerts, and support messages.\n\nImprovement: To monitor and analyze usage to improve the App\'s functionality, performance, and user experience.\n\nMarketing: To send promotional content about All Job Open services, subject to your consent.',
+        'We collect and process your information for the following purposes:\n\nService Provision: To operate the App, connect Candidates with Recruiters, and manage user accounts.\n\nPersonalization: To recommend relevant jobs to Candidates and relevant Candidates to Recruiters.\n\nCommunication: To send service updates, security alerts, and support messages.\n\nImprovement: To monitor and analyze usage to improve the App\'s functionality, performance, and user experience.\n\nMarketing: To send promotional content about AlljobOpen services, subject to your consent.',
       ),
       _buildSection(
         '6. Legal Basis for Processing (GDPR / Applicable Laws)',
@@ -108,7 +108,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '7. Use of Cookies & Tracking Technologies',
-        'All Job Open uses cookies, web beacons, and similar technologies to collect information about your browsing activities to remember your preferences, provide a more personalized experience, and analyze how the App is used. You can manage your cookie preferences through your device or browser settings, though disabling some cookies may affect the functionality of the App.',
+        'AlljobOpen uses cookies, web beacons, and similar technologies to collect information about your browsing activities to remember your preferences, provide a more personalized experience, and analyze how the App is used. You can manage your cookie preferences through your device or browser settings, though disabling some cookies may affect the functionality of the App.',
       ),
       _buildSection('8. Data Sharing & Disclosure', ''),
       _buildSubSection(
@@ -117,7 +117,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSubSection(
         '8.2. Legal & Regulatory Authorities',
-        'We may disclose your information to:\n\nComply with a legal obligation, subpoena, or court order.\nProtect the rights, property, or safety of All Job Open, our users, or the public.\nInvestigate or prevent potential fraud or security breaches.',
+        'We may disclose your information to:\n\nComply with a legal obligation, subpoena, or court order.\nProtect the rights, property, or safety of AlljobOpen, our users, or the public.\nInvestigate or prevent potential fraud or security breaches.',
       ),
       _buildSection(
         '9. Data Storage & Retention Policy',
@@ -125,7 +125,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '10. Data Security Measures',
-        'All Job Open is committed to protecting your data. We implement reasonable and appropriate technical and organizational measures to safeguard the Personal Information we process. These measures include:\n\nEncryption of data in transit and at rest.\nRegular security assessments and vulnerability scanning.\nAccess controls to limit access to Personal Information to authorized personnel only.\n\nHowever, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.',
+        'AlljobOpen is committed to protecting your data. We implement reasonable and appropriate technical and organizational measures to safeguard the Personal Information we process. These measures include:\n\nEncryption of data in transit and at rest.\nRegular security assessments and vulnerability scanning.\nAccess controls to limit access to Personal Information to authorized personnel only.\n\nHowever, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.',
       ),
       _buildSection(
         '11. User Rights',
@@ -145,7 +145,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '13. International Data Transfers',
-        'All Job Open may store and process your information in countries outside of your country of residence, including India and the United States, which may have different data protection laws than those in your region. Where we transfer Personal Information across borders, we implement appropriate safeguards to ensure your data remains protected.',
+        'AlljobOpen may store and process your information in countries outside of your country of residence, including India and the United States, which may have different data protection laws than those in your region. Where we transfer Personal Information across borders, we implement appropriate safeguards to ensure your data remains protected.',
       ),
       _buildSection(
         '14. Third-Party Links',
@@ -157,7 +157,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '16. Contact Information & Grievance Officer',
-        'If you have questions about this Privacy Policy, our data practices, or if you wish to exercise your rights, please contact us:\n\nCompany Name: All Job Open\n📧 Email: support@alljobopen.com\n📍 Address: Ringus, Sikar, Rajasthan, India',
+        'If you have questions about this Privacy Policy, our data practices, or if you wish to exercise your rights, please contact us:\n\nCompany Name: AlljobOpen\n📧 Email: support@alljobopen.com\n📍 Address: Ringus, Sikar, Rajasthan, India',
       ),
       const SizedBox(height: 24),
     ];
@@ -171,11 +171,11 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '1. परिचय और दायरा',
-        'All Job Open में आपका स्वागत है, जो IT और Non-IT नौकरी खोजने वालों तथा रिक्रूटर्स के लिए एक सरल और विश्वसनीय जॉब सर्च एप्लिकेशन है ("ऐप")। यह गोपनीयता नीति बताती है कि All Job Open आपकी जानकारी कैसे एकत्र, उपयोग, प्रोसेस और साझा करता है। यह नीति ऐप के सभी उपयोगकर्ताओं पर लागू होती है, जिनमें नौकरी खोजने वाले ("कैंडिडेट") और रिक्रूटर्स/कंपनियाँ ("रिक्रूटर") शामिल हैं। ऐप का उपयोग करके, आप इस गोपनीयता नीति की शर्तों से सहमत होते हैं।',
+        'AlljobOpen में आपका स्वागत है, जो IT और Non-IT नौकरी खोजने वालों तथा रिक्रूटर्स के लिए एक सरल और विश्वसनीय जॉब सर्च एप्लिकेशन है ("ऐप")। यह गोपनीयता नीति बताती है कि AlljobOpen आपकी जानकारी कैसे एकत्र, उपयोग, प्रोसेस और साझा करता है। यह नीति ऐप के सभी उपयोगकर्ताओं पर लागू होती है, जिनमें नौकरी खोजने वाले ("कैंडिडेट") और रिक्रूटर्स/कंपनियाँ ("रिक्रूटर") शामिल हैं। ऐप का उपयोग करके, आप इस गोपनीयता नीति की शर्तों से सहमत होते हैं।',
       ),
       _buildSection(
         '2. परिभाषाएँ',
-        'इस नीति के उद्देश्य से:\n\nऐप: All Job Open मोबाइल एप्लिकेशन और उससे संबंधित सेवाएँ\n\nव्यक्तिगत जानकारी (Personal Information – PI): ऐसी कोई भी जानकारी जो किसी पहचाने जा सकने वाले व्यक्ति से संबंधित हो\n\nकैंडिडेट: ऐप का उपयोग नौकरी खोजने या आवेदन करने के लिए करने वाला व्यक्ति\n\nरिक्रूटर: ऐप का उपयोग नौकरी पोस्ट करने या कैंडिडेट खोजने के लिए करने वाला व्यक्ति या संस्था\n\nप्रोसेसिंग: व्यक्तिगत जानकारी पर की जाने वाली कोई भी कार्रवाई, जैसे संग्रह, रिकॉर्डिंग, भंडारण या साझा करना\n\nडेटा कंट्रोलर: All Job Open, जो व्यक्तिगत जानकारी के प्रोसेसिंग के उद्देश्य और साधन तय करता है',
+        'इस नीति के उद्देश्य से:\n\nऐप: AlljobOpen मोबाइल एप्लिकेशन और उससे संबंधित सेवाएँ\n\nव्यक्तिगत जानकारी (Personal Information – PI): ऐसी कोई भी जानकारी जो किसी पहचाने जा सकने वाले व्यक्ति से संबंधित हो\n\nकैंडिडेट: ऐप का उपयोग नौकरी खोजने या आवेदन करने के लिए करने वाला व्यक्ति\n\nरिक्रूटर: ऐप का उपयोग नौकरी पोस्ट करने या कैंडिडेट खोजने के लिए करने वाला व्यक्ति या संस्था\n\nप्रोसेसिंग: व्यक्तिगत जानकारी पर की जाने वाली कोई भी कार्रवाई, जैसे संग्रह, रिकॉर्डिंग, भंडारण या साझा करना\n\nडेटा कंट्रोलर: AlljobOpen, जो व्यक्तिगत जानकारी के प्रोसेसिंग के उद्देश्य और साधन तय करता है',
       ),
       _buildSection('3. हम कौन-सी जानकारी एकत्र करते हैं', ''),
       _buildSubSection(
@@ -200,7 +200,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '7. कुकीज़ और ट्रैकिंग तकनीक',
-        'All Job Open उपयोगकर्ता अनुभव को बेहतर बनाने और ऐप के उपयोग का विश्लेषण करने के लिए कुकीज़ और समान तकनीकों का उपयोग करता है। आप अपने डिवाइस या ब्राउज़र सेटिंग्स से कुकीज़ को नियंत्रित कर सकते हैं।',
+        'AlljobOpen उपयोगकर्ता अनुभव को बेहतर बनाने और ऐप के उपयोग का विश्लेषण करने के लिए कुकीज़ और समान तकनीकों का उपयोग करता है। आप अपने डिवाइस या ब्राउज़र सेटिंग्स से कुकीज़ को नियंत्रित कर सकते हैं।',
       ),
       _buildSection('8. डेटा साझा करना', ''),
       _buildSubSection(
@@ -209,7 +209,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSubSection(
         '8.2 कानूनी और नियामक कारण',
-        'कानून या कोर्ट के आदेश का पालन आवश्यक होने पर\n\nधोखाधड़ी या सुरक्षा जोखिम की जाँच के लिए\n\nAll Job Open या उपयोगकर्ताओं की सुरक्षा के लिए',
+        'कानून या कोर्ट के आदेश का पालन आवश्यक होने पर\n\nधोखाधड़ी या सुरक्षा जोखिम की जाँच के लिए\n\nAlljobOpen या उपयोगकर्ताओं की सुरक्षा के लिए',
       ),
       _buildSection(
         '9. डेटा स्टोरेज और रिटेंशन',
@@ -246,7 +246,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       _buildSection(
         '16. संपर्क जानकारी और शिकायत अधिकारी',
-        'कंपनी का नाम: All Job Open\n📧 ईमेल: support@alljobopen.com\n📍 पता: रिंगस, सीकर, राजस्थान, भारत',
+        'कंपनी का नाम: AlljobOpen\n📧 ईमेल: support@alljobopen.com\n📍 पता: रिंगस, सीकर, राजस्थान, भारत',
       ),
       const SizedBox(height: 24),
     ];
