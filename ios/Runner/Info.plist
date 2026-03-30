@@ -52,12 +52,12 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.828440824665-3sfl3dm09190id0j1a1lrromvofltgqi</string>
+				<string>com.googleusercontent.apps.828440824665-mlecf7lpab7emb8cbpvgjkehg6mmmq0u</string>
 			</array>
 		</dict>
 	</array>
 	<key>GIDClientID</key>
-	<string>828440824665-3sfl3dm09190id0j1a1lrromvofltgqi.apps.googleusercontent.com</string>
+	<string>828440824665-mlecf7lpab7emb8cbpvgjkehg6mmmq0u.apps.googleusercontent.com</string>
 	<!-- AdMob App ID -->
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-2412883259923012~8331561679</string>
