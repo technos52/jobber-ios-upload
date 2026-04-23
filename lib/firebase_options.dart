@@ -44,7 +44,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'jobease-edevs.firebasestorage.app',
     androidClientId: '828440824665-7r2rre7rci5j70e67baki17554iik81a.apps.googleusercontent.com',
     iosClientId: '828440824665-3sfl3dm09190id0j1a1lrromvofltgqi.apps.googleusercontent.com',
-    iosBundleId: 'com.example.jobberApp',
+    iosBundleId: 'com.shailesh.alljobopen',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'jobease-edevs.firebasestorage.app',
     androidClientId: '828440824665-7r2rre7rci5j70e67baki17554iik81a.apps.googleusercontent.com',
     iosClientId: '828440824665-3sfl3dm09190id0j1a1lrromvofltgqi.apps.googleusercontent.com',
-    iosBundleId: 'com.example.jobberApp',
+    iosBundleId: 'com.shailesh.alljobopen',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
