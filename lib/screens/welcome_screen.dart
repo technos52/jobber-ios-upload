@@ -3,6 +3,7 @@ import 'privacy_policy_screen.dart';
 import 'terms_conditions_screen.dart';
 import 'candidate_auth_screen.dart';
 import 'employer_auth_screen.dart';
+import '../services/auth_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -118,7 +119,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           colors: [Color(0xFF007BFF), Color(0xFF0056D2)],
                         ).createShader(bounds),
                         child: const Text(
-                          'All Jobs Open',
+                          'All Job Open',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 36,
@@ -396,8 +397,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ),
                     ),
 
-                    const SizedBox(height: 20),
-
                     // Enhanced privacy policy and terms buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -470,6 +469,49 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ],
                     ),
 
+                    const SizedBox(height: 32),
+
+                    // Guest Login Option for Play Store Reviewers
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: primaryBlue.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: TextButton.icon(
+                        onPressed: _handleGuestEntry,
+                        icon: const Icon(
+                          Icons.explore_outlined,
+                          color: primaryBlue,
+                        ),
+                        label: const Text(
+                          'Continue as Guest (Demo Mode)',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: primaryBlue,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Text(
+                      'Perfect for reviewers to explore app features',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -479,5 +521,77 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         ),
       ),
     );
+  }
+
+  void _handleGuestEntry() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Explore Demo Mode'),
+        content: const Text(
+          'Would you like to explore the app as an Applicant or an Employer?',
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _signInAsGuest('candidate');
+            },
+            child: const Text('Applicant'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _signInAsGuest('employer');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0D47A1),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Employer'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _signInAsGuest(String role) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D47A1)),
+            ),
+          ),
+    );
+
+    try {
+      debugPrint('🚀 Starting anonymous sign-in as $role...');
+      await AuthService.signInAnonymously();
+
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading
+
+        if (role == 'candidate') {
+          Navigator.of(context).pushReplacementNamed('/candidate_dashboard');
+        } else {
+          Navigator.of(context).pushReplacementNamed('/employer_dashboard');
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Anonymous sign-in failed: $e');
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Guest login failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

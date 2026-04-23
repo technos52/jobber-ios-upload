@@ -108,10 +108,12 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             final isAuthenticated =
                 authData['isAuthenticated'] as bool? ?? false;
 
-            debugPrint('🔍 Auth Status Check:');
-            debugPrint('  - User Type: $userType');
-            debugPrint('  - Is Complete: $isComplete');
-            debugPrint('  - Is Authenticated: $isAuthenticated');
+            debugPrint('🔍 Auth Status Check Result:');
+            debugPrint('  - userType: $userType');
+            debugPrint('  - isComplete: $isComplete');
+            debugPrint('  - isAuthenticated: $isAuthenticated');
+            debugPrint('  - user.uid: ${user.uid}');
+            debugPrint('  - user.isAnonymous: ${user.isAnonymous}');
 
             // If not properly authenticated, show welcome screen
             if (!isAuthenticated) {

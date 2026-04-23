@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AlljobOpen',
+      title: 'All Job Open',
       debugShowCheckedModeBanner: false,
       theme: _buildResponsiveTheme(),
       navigatorObservers: [routeObserver],

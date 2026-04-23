@@ -95,12 +95,112 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:828440824665:android:632062022495d36da4da48",
+        "android_client_info": {
+          "package_name": "com.shailesh.alljobopen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "828440824665-a2vqtjqposmhq6dkbdjhlus2tbntva39.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobopen",
+            "certificate_hash": "282f968bd0bac4b35e5f8fb48aa4443c6cc90b4a"
+          }
+        },
+        {
+          "client_id": "828440824665-e12hj953208l1q745iesnrp8ts1jt5an.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobopen",
+            "certificate_hash": "281140a332281d657ce7a0177bb6949542706ff7"
+          }
+        },
+        {
+          "client_id": "828440824665-r37dromkfsrpfuednrgdlj8tpi1h57os.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobopen",
+            "certificate_hash": "3a5b502dc7fe80219606053f32425d9e230fedf7"
+          }
+        },
+        {
+          "client_id": "828440824665-tk58j7t8do4337c5godkm5rp6hp6tpef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobopen",
+            "certificate_hash": "5033c00ca0ea146c8c65959e67d9d0ad6a7cd770"
+          }
+        },
+        {
+          "client_id": "828440824665-ai23mjrhbkfqmdcgsmq4dvne7g1e8nv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGvZC6OrdqBPvrMiO-WgCWUD0bV0Ox_Lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "828440824665-ai23mjrhbkfqmdcgsmq4dvne7g1e8nv0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "828440824665-3sfl3dm09190id0j1a1lrromvofltgqi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.jobberApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:828440824665:android:681d4d6c2af7017ea4da48",
         "android_client_info": {
           "package_name": "com.shailesh.alljobsopen"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "828440824665-639rtb32jljid9n3noidp610im9m21uo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobsopen",
+            "certificate_hash": "281140a332281d657ce7a0177bb6949542706ff7"
+          }
+        },
+        {
+          "client_id": "828440824665-qpmfbtr017h955u3e2g48u49c359q9aj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobsopen",
+            "certificate_hash": "282f968bd0bac4b35e5f8fb48aa4443c6cc90b4a"
+          }
+        },
+        {
+          "client_id": "828440824665-r02da67glj1h2gbfthtdl541jjnlv49u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobsopen",
+            "certificate_hash": "5033c00ca0ea146c8c65959e67d9d0ad6a7cd770"
+          }
+        },
+        {
+          "client_id": "828440824665-rr0d5k3lhge6h6cvgrtp2k9d02ln3rqu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobsopen",
+            "certificate_hash": "3a5b502dc7fe80219606053f32425d9e230fedf7"
+          }
+        },
         {
           "client_id": "828440824665-ai23mjrhbkfqmdcgsmq4dvne7g1e8nv0.apps.googleusercontent.com",
           "client_type": 3

@@ -137,10 +137,34 @@ class _SimpleCandidateDashboardState extends State<SimpleCandidateDashboard>
         debugPrint('🔍 Firebase Auth email: ${user.email}');
         debugPrint('🔍 Firebase Auth phoneNumber: ${user.phoneNumber}');
 
+        // Check if guest user
+        if (user.isAnonymous) {
+          debugPrint('👤 Guest user detected, skipping Firestore profile lookup');
+          if (mounted) {
+            setState(() {
+              _candidateName = 'Guest User';
+              _candidateGender = '';
+              _isLoadingProfile = false;
+            });
+          }
+          return;
+        }
+
         // Get the actual document ID for this user's email
-        final userId = await FirebaseService.getUserDocumentIdByEmail(
-          user.email!,
-        );
+        final email = user.email;
+        if (email == null) {
+          debugPrint('❌ Guest-like user detected but not marked anonymous? Email is null.');
+          if (mounted) {
+            setState(() {
+              _candidateName = 'User';
+              _candidateGender = '';
+              _isLoadingProfile = false;
+            });
+          }
+          return;
+        }
+
+        final userId = await FirebaseService.getUserDocumentIdByEmail(email);
         if (userId == null) {
           debugPrint('❌ User document not found for email: ${user.email}');
           if (mounted) {
@@ -178,10 +202,11 @@ class _SimpleCandidateDashboardState extends State<SimpleCandidateDashboard>
             debugPrint('❌ No candidate document found at: candidates/$userId');
 
             // Fallback: try to get by email if available
-            if (user.email != null) {
+            final email = user.email;
+            if (email != null) {
               debugPrint('🔄 Trying fallback: search by email');
               candidateData = await FirebaseService.getCandidateByEmail(
-                user.email!,
+                email,
               );
               debugPrint('📄 Candidate data by email: $candidateData');
             }
@@ -559,10 +584,29 @@ class _SimpleCandidateDashboardState extends State<SimpleCandidateDashboard>
         '🔍 Loading applied jobs from candidates/{userId}/applications subcollection',
       );
 
+      // Check if guest user
+      if (user.isAnonymous) {
+        debugPrint('👤 Guest user detected, skipping applied jobs lookup');
+        if (mounted) {
+          setState(() {
+            _isLoadingAppliedJobs = false;
+          });
+        }
+        return;
+      }
+
+      final email = user.email;
+      if (email == null) {
+        if (mounted) {
+          setState(() {
+            _isLoadingAppliedJobs = false;
+          });
+        }
+        return;
+      }
+
       // Get the actual document ID for this user's email
-      final userId = await FirebaseService.getUserDocumentIdByEmail(
-        user.email!,
-      );
+      final userId = await FirebaseService.getUserDocumentIdByEmail(email);
       if (userId == null) {
         debugPrint('❌ User document not found for email: ${user.email}');
         if (mounted) {

@@ -2,17 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>destination</key>
+	<string>export</string>
+	<key>manageAppVersionAndBuildNumber</key>
+	<true/>
 	<key>method</key>
 	<string>app-store</string>
-	<key>teamID</key>
-	<string>U2B9S8VMG9</string>
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.shailesh.alljobopen</key>
 		<string>AppStore</string>
 	</dict>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
 	<key>signingStyle</key>
 	<string>manual</string>
+	<key>stripSwiftSymbols</key>
+	<true/>
+	<key>teamID</key>
+	<string>U2B9S8VMG9</string>
 	<key>uploadSymbols</key>
 	<true/>
 </dict>

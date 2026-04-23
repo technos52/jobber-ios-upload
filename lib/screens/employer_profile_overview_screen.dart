@@ -32,6 +32,17 @@ class _EmployerProfileOverviewScreenState
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
+        if (user.isAnonymous) {
+          if (mounted) {
+            setState(() {
+              _companyName = 'Demo Company';
+              _email = 'demo@example.com';
+              _approvalStatus = 'approved';
+            });
+          }
+          return;
+        }
+
         debugPrint('🔍 Loading company profile for user: ${user.uid}');
 
         final employerDoc = await FirebaseFirestore.instance
@@ -105,7 +116,7 @@ class _EmployerProfileOverviewScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'All Jobs Open',
+                  'All Job Open',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -288,6 +299,83 @@ class _EmployerProfileOverviewScreenState
                   ),
 
                   const SizedBox(height: 24),
+
+                  // Delete Account Button
+                  TextButton.icon(
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Delete Company Profile'),
+                          content: const Text(
+                            'Are you sure you want to permanently delete your company profile and all your job postings? This action cannot be undone.',
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.red,
+                              ),
+                              child: const Text('Delete Permanently'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirmed != true || !mounted) return;
+
+                      // Show loading
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              primaryBlue,
+                            ),
+                          ),
+                        ),
+                      );
+
+                      try {
+                        await AuthService.deleteAccount();
+                        if (!mounted) return;
+                        Navigator.pop(context); // Close loading
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/auth',
+                          (route) => false,
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        Navigator.pop(context); // Close loading
+                        String message = 'Error deleting account: $e';
+                        if (e.toString().contains('SECURITY_REAUTH_REQUIRED')) {
+                          message = 'For security, please logout and login again before deleting your account.';
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(message), backgroundColor: Colors.red),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    label: const Text(
+                      'Delete Account Permanently',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
 
                   // Logout Button
                   SizedBox(

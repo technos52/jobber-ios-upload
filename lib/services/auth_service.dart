@@ -13,8 +13,57 @@ class AuthService {
   // Current user getter
   static User? get currentUser => _auth.currentUser;
 
+  // Account deletion
+  static Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final email = user.email;
+      final uid = user.uid;
+
+      // 1. Delete Firestore records
+      if (email != null) {
+        final candidateQuery = await _firestore
+            .collection('candidates')
+            .where('email', isEqualTo: email)
+            .get();
+        for (var doc in candidateQuery.docs) {
+          await doc.reference.delete();
+        }
+      }
+
+      await _firestore.collection('employers').doc(uid).delete();
+
+      // 2. Delete Firebase Auth user
+      await user.delete();
+      
+      // 3. Sign out from Google if necessary
+      await _googleSignIn.signOut();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw Exception('SECURITY_REAUTH_REQUIRED');
+      }
+      rethrow;
+    } catch (e) {
+      debugPrint('Error deleting account: $e');
+      rethrow;
+    }
+  }
+
   // Auth state changes stream
   static Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  // Anonymous sign-in for guests/reviewers
+  static Future<UserCredential?> signInAnonymously() async {
+    try {
+      final credential = await _auth.signInAnonymously();
+      return credential;
+    } catch (e) {
+      debugPrint('Error signing in anonymously: $e');
+      rethrow;
+    }
+  }
 
   // Signed‑in check
   static bool get isSignedIn => _auth.currentUser != null;
@@ -596,6 +645,20 @@ class AuthService {
       };
     }
     try {
+      // Handle anonymous guest users (for Google Play Review)
+      if (user.isAnonymous) {
+        return {
+          'isAuthenticated': true,
+          'userType': 'candidate',
+          'isRegistrationComplete': true,
+          'userData': {
+            'fullName': 'Guest User',
+            'email': 'guest@example.com',
+            'userType': 'candidate',
+          },
+        };
+      }
+
       await refreshToken();
       final userData = await getUserData();
       final isComplete = await isRegistrationComplete();

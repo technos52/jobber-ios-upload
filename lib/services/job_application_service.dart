@@ -25,10 +25,19 @@ class JobApplicationService {
       print('👤 User email: ${user.email}');
       print('🎯 Job ID: $jobId');
 
+      // Guest users cannot apply for jobs
+      if (user.isAnonymous) {
+        print('🚫 Guest users cannot apply for jobs');
+        throw Exception('Guest users cannot apply for jobs. Please sign in to apply.');
+      }
+
+      final email = user.email;
+      if (email == null) {
+        throw Exception('User email not found. Cannot apply for job.');
+      }
+
       // Get the actual document ID for this user's email
-      final userId = await FirebaseService.getUserDocumentIdByEmail(
-        user.email!,
-      );
+      final userId = await FirebaseService.getUserDocumentIdByEmail(email);
 
       if (userId == null) {
         print('❌ User document not found for email: ${user.email}');
@@ -109,10 +118,19 @@ class JobApplicationService {
       throw Exception('User not authenticated');
     }
 
+    final email = user.email;
+    if (user.isAnonymous || email == null) {
+      // Return empty stream for guests
+      yield* const Stream.empty();
+      return;
+    }
+
     // Get the actual document ID for this user's email
-    final userId = await FirebaseService.getUserDocumentIdByEmail(user.email!);
+    final userId = await FirebaseService.getUserDocumentIdByEmail(email);
     if (userId == null) {
-      throw Exception('User profile not found');
+      // For guests or users without profile, return empty stream
+      yield* const Stream.empty();
+      return;
     }
 
     yield* _firestore
@@ -129,10 +147,11 @@ class JobApplicationService {
       final user = _auth.currentUser;
       if (user == null) return false;
 
+      final email = user.email;
+      if (user.isAnonymous || email == null) return false;
+
       // Get the actual document ID for this user's email
-      final userId = await FirebaseService.getUserDocumentIdByEmail(
-        user.email!,
-      );
+      final userId = await FirebaseService.getUserDocumentIdByEmail(email);
       if (userId == null) return false;
 
       final querySnapshot = await _firestore
@@ -159,10 +178,11 @@ class JobApplicationService {
       final user = _auth.currentUser;
       if (user == null) return false;
 
+      final email = user.email;
+      if (user.isAnonymous || email == null) return false;
+
       // Get the actual document ID for this user's email
-      final userId = await FirebaseService.getUserDocumentIdByEmail(
-        user.email!,
-      );
+      final userId = await FirebaseService.getUserDocumentIdByEmail(email);
       if (userId == null) return false;
 
       await _firestore
@@ -188,10 +208,11 @@ class JobApplicationService {
       final user = _auth.currentUser;
       if (user == null) return null;
 
+      final email = user.email;
+      if (user.isAnonymous || email == null) return null;
+
       // Get the actual document ID for this user's email
-      final userId = await FirebaseService.getUserDocumentIdByEmail(
-        user.email!,
-      );
+      final userId = await FirebaseService.getUserDocumentIdByEmail(email);
       if (userId == null) return null;
 
       return await _firestore
@@ -212,10 +233,11 @@ class JobApplicationService {
       final user = _auth.currentUser;
       if (user == null) return false;
 
+      final email = user.email;
+      if (user.isAnonymous || email == null) return false;
+
       // Get the actual document ID for this user's email
-      final userId = await FirebaseService.getUserDocumentIdByEmail(
-        user.email!,
-      );
+      final userId = await FirebaseService.getUserDocumentIdByEmail(email);
       if (userId == null) return false;
 
       await _firestore

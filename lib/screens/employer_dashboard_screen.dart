@@ -499,7 +499,7 @@ class _EmployerDashboardScreenState extends State<EmployerDashboardScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'All Jobs Open',
+                  'All Job Open',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
