@@ -38,12 +38,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDTjqCwO1WDE1yz3RuslFWtKmqinR-5v5k',
-    appId: '1:828440824665:ios:b6435bd5146bcbaea4da48',
+    appId: '1:828440824665:ios:492bc74ea673fc13a4da48',
     messagingSenderId: '828440824665',
     projectId: 'jobease-edevs',
     storageBucket: 'jobease-edevs.firebasestorage.app',
     androidClientId: '828440824665-7r2rre7rci5j70e67baki17554iik81a.apps.googleusercontent.com',
-    iosClientId: '828440824665-3sfl3dm09190id0j1a1lrromvofltgqi.apps.googleusercontent.com',
+    iosClientId: '828440824665-mlecf7lpab7emb8cbpvgjkehg6mmmq0u.apps.googleusercontent.com',
     iosBundleId: 'com.shailesh.alljobopen',
   );
 
@@ -59,12 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDTjqCwO1WDE1yz3RuslFWtKmqinR-5v5k',
-    appId: '1:828440824665:ios:b6435bd5146bcbaea4da48',
+    appId: '1:828440824665:ios:492bc74ea673fc13a4da48',
     messagingSenderId: '828440824665',
     projectId: 'jobease-edevs',
     storageBucket: 'jobease-edevs.firebasestorage.app',
     androidClientId: '828440824665-7r2rre7rci5j70e67baki17554iik81a.apps.googleusercontent.com',
-    iosClientId: '828440824665-3sfl3dm09190id0j1a1lrromvofltgqi.apps.googleusercontent.com',
+    iosClientId: '828440824665-mlecf7lpab7emb8cbpvgjkehg6mmmq0u.apps.googleusercontent.com',
     iosBundleId: 'com.shailesh.alljobopen',
   );
 
