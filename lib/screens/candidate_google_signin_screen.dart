@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io' show Platform;
 import '../services/auth_service.dart';
 import '../utils/user_role_storage.dart';
 import 'candidate_registration_step1_screen.dart';
@@ -20,24 +21,23 @@ class _CandidateGoogleSignInScreenState
   bool _isLoading = false;
   static const primaryBlue = Color(0xFF007BFF);
 
-  Future<void> _handleGoogleSignIn() async {
+  Future<void> _handleSignIn(Future<UserCredential?> Function() signInMethod, String providerName) async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      debugPrint('🔍 Starting Google Sign-In for candidate login...');
+      debugPrint('🔍 Starting $providerName Sign-In for candidate login...');
 
       // Set preferred role to candidate BEFORE authentication
       await UserRoleStorage.saveRole('candidate');
       debugPrint('✅ Set preferred role to candidate');
 
-      // Use simplified AuthService for candidate Google Sign-In
-      final UserCredential? userCredential =
-          await AuthService.signInWithGoogleForCandidate();
+      // Use simplified AuthService for candidate Sign-In
+      final UserCredential? userCredential = await signInMethod();
 
       if (userCredential == null) {
-        debugPrint('🔍 Google Sign-In cancelled by user');
+        debugPrint('🔍 $providerName Sign-In cancelled by user');
         setState(() {
           _isLoading = false;
         });
@@ -45,15 +45,15 @@ class _CandidateGoogleSignInScreenState
       }
 
       debugPrint(
-        '🔍 Google Sign-In successful - new user, showing sign up dialog',
+        '🔍 $providerName Sign-In successful - new user, showing sign up dialog',
       );
 
-      // If we get here, it's a new user who successfully signed in with Google
+      // If we get here, it's a new user who successfully signed in
       if (mounted) {
         _showSignUpDialog();
       }
     } catch (e) {
-      debugPrint('🔍 Error in Google Sign-In: $e');
+      debugPrint('🔍 Error in $providerName Sign-In: $e');
 
       if (mounted) {
         // Handle existing user scenarios from AuthService
@@ -77,7 +77,7 @@ class _CandidateGoogleSignInScreenState
           // Generic error handling
           _showDialog(
             'Sign In Failed',
-            'Failed to sign in with Google. Please try again.\n\nError: ${e.toString().replaceAll('Exception: ', '')}',
+            'Failed to sign in with $providerName. Please try again.\n\nError: ${e.toString().replaceAll('Exception: ', '')}',
             isError: true,
           );
         }
@@ -89,6 +89,14 @@ class _CandidateGoogleSignInScreenState
         });
       }
     }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    await _handleSignIn(() => AuthService.signInWithGoogleForCandidate(), 'Google');
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    await _handleSignIn(() => AuthService.signInWithAppleForCandidate(), 'Apple');
   }
 
   void _handleExistingCompleteUser(String mobileNumber) {
@@ -591,9 +599,9 @@ class _CandidateGoogleSignInScreenState
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryBlue.withValues(alpha: 0.25),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: primaryBlue.withValues(alpha: 0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -650,6 +658,65 @@ class _CandidateGoogleSignInScreenState
                             ),
                     ),
                   ),
+
+                  if (Platform.isIOS) ...[
+                    const SizedBox(height: 16),
+                    // Apple Sign In Button
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _handleAppleSignIn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          minimumSize: const Size(double.infinity, 56),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.apple,
+                                    size: 28,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    'Sign in with Apple',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
 
                   SizedBox(height: size.height * 0.04),
                 ],

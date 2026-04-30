@@ -3,11 +3,17 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../utils/user_role_storage.dart';
+import '../firebase_options.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: defaultTargetPlatform == TargetPlatform.iOS
+        ? DefaultFirebaseOptions.ios.iosClientId
+        : null,
+  );
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Current user getter
@@ -205,6 +211,103 @@ class AuthService {
     } catch (e) {
       debugPrint('❌ Error checking candidate account eligibility: $e');
       return false;
+    }
+  }
+
+  // -----------------------------------------------------------------
+  // Sign‑in with Apple for candidates
+  // -----------------------------------------------------------------
+  static Future<UserCredential?> signInWithAppleForCandidate() async {
+    try {
+      debugPrint('🔍 Starting Sign-In with Apple for candidates...');
+      
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
+      final AuthCredential credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      final user = userCredential.user;
+
+      if (user != null) {
+        // Check for existing candidate in Firestore
+        final existingCandidateQuery = await _firestore
+            .collection('candidates')
+            .where('email', isEqualTo: user.email)
+            .limit(1)
+            .get();
+
+        if (existingCandidateQuery.docs.isNotEmpty) {
+          final candidateData = existingCandidateQuery.docs.first.data();
+          final registrationComplete = candidateData['registrationComplete'] ?? false;
+          final mobileNumber = existingCandidateQuery.docs.first.id;
+
+          if (registrationComplete) {
+            throw Exception('EXISTING_USER_COMPLETE:$mobileNumber');
+          } else {
+            throw Exception('EXISTING_USER_INCOMPLETE:$mobileNumber');
+          }
+        }
+      }
+
+      return userCredential;
+    } catch (e) {
+      debugPrint('🔍 Error in candidate Apple Sign-In: $e');
+      rethrow;
+    }
+  }
+
+  // -----------------------------------------------------------------
+  // Sign‑in with Apple for employers
+  // -----------------------------------------------------------------
+  static Future<UserCredential?> signInWithAppleForEmployer() async {
+    try {
+      debugPrint('🔍 Starting Sign-In with Apple for employers...');
+      
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
+      final AuthCredential credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      final user = userCredential.user;
+
+      if (user != null) {
+        // Pre-check if this email can be used for employer registration
+        final canCreate = await canCreateEmployerAccount(
+          user.email!,
+          user.uid,
+        );
+        if (!canCreate) {
+          debugPrint('🚫 Cannot create employer account with this email');
+          await user.delete();
+          await signOut();
+          throw Exception(
+            'This email is already associated with another account. Please use a different email address.',
+          );
+        }
+      }
+
+      return userCredential;
+    } catch (e) {
+      debugPrint('🔍 Error in employer Apple Sign-In: $e');
+      rethrow;
     }
   }
 
@@ -410,6 +513,38 @@ class AuthService {
       debugPrint('🔍 Error in employer Google Sign-In: $e');
       await _googleSignIn.signOut();
       rethrow;
+    }
+  }
+
+  // -----------------------------------------------------------------
+  // Sign‑in with Apple
+  // -----------------------------------------------------------------
+  static Future<UserCredential?> signInWithApple() async {
+    try {
+      debugPrint('🔍 Starting Sign-In with Apple...');
+      
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      debugPrint('🔍 Apple credential received');
+
+      final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
+      final AuthCredential credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      debugPrint('🔍 Firebase sign-in with Apple successful: ${userCredential.user?.email}');
+      
+      return userCredential;
+    } catch (e) {
+      debugPrint('🔍 Error signing in with Apple: $e');
+      return null;
     }
   }
 

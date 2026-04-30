@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io' show Platform;
 import '../services/auth_service.dart';
 
 class EmployerLoginScreen extends StatefulWidget {
@@ -14,20 +15,18 @@ class EmployerLoginScreen extends StatefulWidget {
 class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
   bool _isSigningIn = false;
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _handleSignIn(Future<UserCredential?> Function() signInMethod, String providerName) async {
     setState(() {
       _isSigningIn = true;
     });
 
     try {
-      debugPrint('🔍 Employer login: Starting Google sign in');
+      debugPrint('🔍 Employer login: Starting $providerName sign in');
       
-      // Use AuthService for Google Sign-In
-      final UserCredential? userCredential =
-          await AuthService.signInWithGoogle();
+      final UserCredential? userCredential = await signInMethod();
 
       if (userCredential == null) {
-        debugPrint('🔍 Employer login: Google sign in returned null');
+        debugPrint('🔍 Employer login: $providerName sign in returned null');
         setState(() {
           _isSigningIn = false;
         });
@@ -78,7 +77,7 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
         }
       }
     } catch (e) {
-      debugPrint('🔍 Employer login: Error signing in: $e');
+      debugPrint('🔍 Employer login: Error signing in with $providerName: $e');
       if (mounted) {
         String errorMessage = 'Error signing in. Please try again.';
         if (e.toString().contains('permission-denied')) {
@@ -107,6 +106,14 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
         _isSigningIn = false;
       });
     }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    await _handleSignIn(() => AuthService.signInWithGoogle(), 'Google');
+  }
+
+  Future<void> _signInWithApple() async {
+    await _handleSignIn(() => AuthService.signInWithApple(), 'Apple');
   }
 
   @override
@@ -206,15 +213,15 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
               // Bottom section with login button
               Column(
                 children: [
-                  // Google Sign In Button
+                   // Google Sign In Button
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryBlue.withOpacity(0.25),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: primaryBlue.withOpacity(0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -267,6 +274,67 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
                               ],
                             ),
                     ),
+                  ),
+
+                  if (Platform.isIOS) ...[
+                    const SizedBox(height: 16),
+                    // Apple Sign In Button
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _isSigningIn ? null : _signInWithApple,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          minimumSize: const Size(double.infinity, 56),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: _isSigningIn
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.apple,
+                                    size: 28,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    'Sign In with Apple',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
+
                   ),
 
                   const SizedBox(height: 24),
