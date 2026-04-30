@@ -334,8 +334,8 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
                       ),
                     ),
                   ],
-
-                  ),
+                ],
+              ),
 
                   const SizedBox(height: 24),
 
