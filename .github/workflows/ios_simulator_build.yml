@@ -25,7 +25,7 @@ jobs:
       - name: Install Pods
         run: |
           cd ios
-          pod install --repo-update
+          pod update --repo-update
           cd ..
 
       - name: Build for Simulator
