@@ -1,0 +1,45 @@
+name: iOS Simulator Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install Pods
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: Build for Simulator
+        run: |
+          flutter build ios --debug --simulator
+
+      - name: Zip Simulator App
+        run: |
+          cd build/ios/iphonesimulator
+          zip -r ../../../ios_simulator_app.zip Runner.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: ios_simulator_app.zip
+          retention-days: 5
