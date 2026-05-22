@@ -19,6 +19,9 @@ jobs:
           channel: 'stable' # Use channel instead of version string
           cache: true
 
+      - name: Disable Swift Package Manager
+        run: flutter config --no-enable-swift-package-manager
+
       - name: Install dependencies
         run: flutter pub get
 
