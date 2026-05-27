@@ -50,7 +50,7 @@ class _CandidateGoogleSignInScreenState
 
       // If we get here, it's a new user who successfully signed in
       if (mounted) {
-        _showSignUpDialog();
+        _showSignUpDialog(providerName);
       }
     } catch (e) {
       debugPrint('🔍 Error in $providerName Sign-In: $e');
@@ -374,7 +374,7 @@ class _CandidateGoogleSignInScreenState
     );
   }
 
-  void _showSignUpDialog() {
+  void _showSignUpDialog(String providerName) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -401,16 +401,18 @@ class _CandidateGoogleSignInScreenState
             ),
           ],
         ),
-        content: const Text(
-          'No account found with this Google account. Would you like to create a new account?',
-          style: TextStyle(fontSize: 15, color: Color(0xFF6B7280), height: 1.5),
+        content: Text(
+          'No account found with this $providerName account. Would you like to create a new account?',
+          style: const TextStyle(fontSize: 15, color: Color(0xFF6B7280), height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () async {
               // Sign out if user cancels
               await FirebaseAuth.instance.signOut();
-              await GoogleSignIn().signOut();
+              if (providerName == 'Google') {
+                await GoogleSignIn().signOut();
+              }
               if (mounted) {
                 Navigator.pop(context);
                 Navigator.pop(context);
@@ -454,6 +456,12 @@ class _CandidateGoogleSignInScreenState
   }
 
   void _showDialog(String title, String message, {bool isError = false}) {
+    String sanitizedMessage = message;
+    if (Platform.isIOS) {
+      sanitizedMessage = sanitizedMessage
+          .replaceAll(RegExp(r'Google', caseSensitive: false), 'original provider')
+          .replaceAll(RegExp(r'Android', caseSensitive: false), 'mobile');
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -480,7 +488,7 @@ class _CandidateGoogleSignInScreenState
           ],
         ),
         content: Text(
-          message,
+          sanitizedMessage,
           style: const TextStyle(
             fontSize: 15,
             color: Color(0xFF6B7280),

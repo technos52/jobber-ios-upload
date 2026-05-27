@@ -259,6 +259,15 @@ class AuthService {
       }
 
       return userCredential;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('🔍 Firebase Auth Error in Apple Sign-In: ${e.code} - ${e.message}');
+      if (e.code == 'account-exists-with-different-credential') {
+        final email = e.email ?? '';
+        throw Exception(
+          'ACCOUNT_LINKING_REQUIRED:$email:This email is already registered. Please sign in with your existing method first.',
+        );
+      }
+      throw Exception('Firebase Auth Error: ${e.message}');
     } catch (e) {
       debugPrint('🔍 Error in candidate Apple Sign-In: $e');
       rethrow;
@@ -305,6 +314,14 @@ class AuthService {
       }
 
       return userCredential;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('🔍 Firebase Auth Error in employer Apple Sign-In: ${e.code} - ${e.message}');
+      if (e.code == 'account-exists-with-different-credential') {
+        throw Exception(
+          'This email is already registered with a different provider. Please sign in using your original method.',
+        );
+      }
+      throw Exception('Firebase Auth Error: ${e.message}');
     } catch (e) {
       debugPrint('🔍 Error in employer Apple Sign-In: $e');
       rethrow;
@@ -516,9 +533,6 @@ class AuthService {
     }
   }
 
-  // -----------------------------------------------------------------
-  // Sign‑in with Apple
-  // -----------------------------------------------------------------
   static Future<UserCredential?> signInWithApple() async {
     try {
       debugPrint('🔍 Starting Sign-In with Apple...');
@@ -542,9 +556,17 @@ class AuthService {
       debugPrint('🔍 Firebase sign-in with Apple successful: ${userCredential.user?.email}');
       
       return userCredential;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('🔍 Firebase Auth Error in Apple Sign-In: ${e.code} - ${e.message}');
+      if (e.code == 'account-exists-with-different-credential') {
+        throw Exception(
+          'This email is already registered with a different provider. Please sign in using your original method.',
+        );
+      }
+      throw Exception('Firebase Auth Error: ${e.message}');
     } catch (e) {
       debugPrint('🔍 Error signing in with Apple: $e');
-      return null;
+      rethrow;
     }
   }
 

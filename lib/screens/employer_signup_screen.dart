@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
 import '../services/auth_service.dart';
@@ -191,7 +192,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gmail verified: ${_gmailAccount}'),
+            content: Text('Email verified: ${_gmailAccount}'),
             backgroundColor: Colors.green.shade500,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -206,10 +207,79 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
           _isGoogleSigningIn = false;
         });
 
-        String errorMessage = 'Gmail verification failed. Please try again.';
+        String errorMessage = 'Email verification failed. Please try again.';
         if (e.toString().contains('already associated') ||
             e.toString().contains('conflict detected')) {
           errorMessage = e.toString().replaceAll('Exception: ', '');
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red.shade400,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    setState(() {
+      _isGoogleSigningIn = true;
+    });
+
+    try {
+      // Use the enhanced employer-specific Apple sign-in
+      final UserCredential? userCredential =
+          await AuthService.signInWithAppleForEmployer();
+
+      if (userCredential == null) {
+        setState(() {
+          _isGoogleSigningIn = false;
+        });
+        return;
+      }
+
+      if (userCredential.user != null && mounted) {
+        setState(() {
+          _googleUser = userCredential.user;
+          _gmailAccount = userCredential.user!.email;
+          _gmailVerified = true;
+          _isGoogleSigningIn = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Email verified: ${_gmailAccount}'),
+            backgroundColor: Colors.green.shade500,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isGoogleSigningIn = false;
+        });
+
+        String errorMessage = 'Verification failed. Please try again.';
+        if (e.toString().contains('already associated') ||
+            e.toString().contains('conflict detected') ||
+            e.toString().contains('registered with a different provider')) {
+          errorMessage = e.toString().replaceAll('Exception: ', '');
+        }
+
+        if (Platform.isIOS) {
+          errorMessage = errorMessage
+              .replaceAll(RegExp(r'Google', caseSensitive: false), 'original provider')
+              .replaceAll(RegExp(r'Android', caseSensitive: false), 'mobile');
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -242,18 +312,16 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
     }
 
     if (!_gmailVerified) {
-      _showValidationError('Please verify your Gmail first');
+      _showValidationError('Please verify your email first');
       return false;
     }
 
-    if (_mobileController.text.trim().isEmpty) {
-      _showValidationError('Please enter mobile number');
-      return false;
-    }
-
-    if (_mobileController.text.trim().length != 10) {
-      _showValidationError('Please enter a valid 10-digit mobile number');
-      return false;
+    final mobileVal = _mobileController.text.trim();
+    if (mobileVal.isNotEmpty) {
+      if (mobileVal.length != 10) {
+        _showValidationError('Please enter a valid 10-digit mobile number');
+        return false;
+      }
     }
 
     if (_selectedIndustry == null || _selectedIndustry!.isEmpty) {
@@ -304,7 +372,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null || _googleUser == null) {
         throw Exception(
-          'User not authenticated. Please verify your Gmail account first.',
+          'User not authenticated. Please verify your email first.',
         );
       }
 
@@ -439,12 +507,12 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
         String errorMessage = 'Registration failed. Please try again.';
         if (e.toString().contains('PERMISSION_DENIED')) {
           errorMessage =
-              'Authentication required. Please verify your Gmail account first.';
+              'Authentication required. Please verify your email first.';
         } else if (e.toString().contains(
           'Missing or insufficient permissions',
         )) {
           errorMessage =
-              'Permission denied. Please ensure you are signed in with Gmail.';
+              'Permission denied. Please ensure you are signed in.';
         } else if (e.toString().contains('already exists') ||
             e.toString().contains('already associated')) {
           errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -720,11 +788,11 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
 
                             const SizedBox(height: 16),
 
-                            // Gmail Authentication Section
+                            // Email Authentication Section
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildLabel('Gmail Authentication'),
+                                _buildLabel('Email Authentication'),
                                 const SizedBox(height: 8),
                                 Container(
                                   width: double.infinity,
@@ -758,7 +826,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   const Text(
-                                                    'Gmail Verified',
+                                                    'Email Verified',
                                                     style: TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -793,7 +861,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
                                             const SizedBox(width: 12),
                                             const Expanded(
                                               child: Text(
-                                                'Verify your Gmail account',
+                                                'Verify your email address',
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w500,
@@ -803,53 +871,67 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(height: 12),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton.icon(
-                                            onPressed: _isGoogleSigningIn
-                                                ? null
-                                                : _handleGoogleSignIn,
-                                            icon: _isGoogleSigningIn
-                                                ? SizedBox(
-                                                    width: 16,
-                                                    height: 16,
-                                                    child: CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                            Color
-                                                          >(Colors.white),
-                                                    ),
-                                                  )
-                                                : Icon(
-                                                    Icons.login_rounded,
-                                                    size: 18,
-                                                  ),
-                                            label: Text(
-                                              _isGoogleSigningIn
-                                                  ? 'Verifying Gmail...'
-                                                  : 'Sign in with Gmail',
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: ElevatedButton.icon(
+                                                onPressed: _isGoogleSigningIn
+                                                    ? null
+                                                    : _handleGoogleSignIn,
+                                                icon: _isGoogleSigningIn
+                                                    ? const SizedBox(
+                                                        width: 16,
+                                                        height: 16,
+                                                        child: CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                        ),
+                                                      )
+                                                    : Image.asset(
+                                                        'assets/google_logo.png',
+                                                        height: 20,
+                                                        width: 20,
+                                                        errorBuilder: (context, error, stackTrace) =>
+                                                            const Icon(Icons.login_rounded, size: 20, color: Colors.white),
+                                                      ),
+                                                label: const Text('Verify Google'),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: primaryBlue,
+                                                  foregroundColor: Colors.white,
+                                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                ),
                                               ),
                                             ),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: primaryBlue,
-                                              foregroundColor: Colors.white,
-                                              disabledBackgroundColor:
-                                                  Colors.grey.shade300,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 12,
+                                            if (Platform.isIOS) ...[
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: ElevatedButton.icon(
+                                                  onPressed: _isGoogleSigningIn
+                                                      ? null
+                                                      : _handleAppleSignIn,
+                                                  icon: _isGoogleSigningIn
+                                                      ? const SizedBox(
+                                                          width: 16,
+                                                          height: 16,
+                                                          child: CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                          ),
+                                                        )
+                                                      : const Icon(Icons.apple, size: 24, color: Colors.white),
+                                                  label: const Text('Verify Apple'),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.black,
+                                                    foregroundColor: Colors.white,
+                                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                                   ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                            ],
+                                          ],
                                         ),
                                       ],
                                     ],
@@ -863,7 +945,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
                             // Mobile Number Field
                             _buildTextField(
                               controller: _mobileController,
-                              label: 'Mobile Number',
+                              label: 'Mobile Number (Optional)',
                               hint: 'Enter 10-digit mobile number',
                               icon: Icons.phone_rounded,
                               inputFormatters: [
@@ -871,11 +953,10 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
                                 LengthLimitingTextInputFormatter(10),
                               ],
                               validator: (value) {
-                                if (value?.isEmpty ?? true) {
-                                  return 'Mobile number is required';
-                                }
-                                if (value!.length != 10) {
-                                  return 'Mobile number must be 10 digits';
+                                if (value != null && value.isNotEmpty) {
+                                  if (value.length != 10) {
+                                    return 'Mobile number must be 10 digits';
+                                  }
                                 }
                                 return null;
                               },

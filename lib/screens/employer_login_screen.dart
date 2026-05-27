@@ -85,6 +85,14 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
               'Unable to verify account. Please try again or contact support.';
         } else if (e.toString().contains('network')) {
           errorMessage = 'Network error. Please check your connection.';
+        } else {
+          errorMessage = e.toString().replaceAll('Exception: ', '');
+        }
+
+        if (Platform.isIOS) {
+          errorMessage = errorMessage
+              .replaceAll(RegExp(r'Google', caseSensitive: false), 'original provider')
+              .replaceAll(RegExp(r'Android', caseSensitive: false), 'mobile');
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
