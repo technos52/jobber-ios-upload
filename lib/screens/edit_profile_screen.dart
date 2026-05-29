@@ -814,12 +814,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 16),
                       _buildTextField(
                         controller: _mobileController,
-                        label: 'Mobile Number',
+                        label: 'Mobile Number (Optional)',
                         icon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your mobile number';
+                          if (value != null && value.trim().isNotEmpty) {
+                            if (value.length != 10) {
+                              return 'Mobile number must be 10 digits';
+                            }
+                            if (!RegExp(r'^[6-9]\d{9}$').hasMatch(value)) {
+                              return 'Invalid mobile number';
+                            }
                           }
                           return null;
                         },

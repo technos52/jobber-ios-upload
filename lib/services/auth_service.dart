@@ -238,6 +238,15 @@ class AuthService {
       final user = userCredential.user;
 
       if (user != null) {
+        // If Apple returned a name, update Firebase user profile so displayName is populated
+        if (appleCredential.givenName != null || appleCredential.familyName != null) {
+          final String fullName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+          if (fullName.isNotEmpty) {
+            await user.updateDisplayName(fullName);
+            await user.reload();
+          }
+        }
+
         // Check for existing candidate in Firestore
         final existingCandidateQuery = await _firestore
             .collection('candidates')
@@ -298,6 +307,15 @@ class AuthService {
       final user = userCredential.user;
 
       if (user != null) {
+        // If Apple returned a name, update Firebase user profile so displayName is populated
+        if (appleCredential.givenName != null || appleCredential.familyName != null) {
+          final String fullName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+          if (fullName.isNotEmpty) {
+            await user.updateDisplayName(fullName);
+            await user.reload();
+          }
+        }
+
         // Pre-check if this email can be used for employer registration
         final canCreate = await canCreateEmployerAccount(
           user.email!,
@@ -553,6 +571,19 @@ class AuthService {
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
+      final user = userCredential.user;
+
+      if (user != null) {
+        // If Apple returned a name, update Firebase user profile so displayName is populated
+        if (appleCredential.givenName != null || appleCredential.familyName != null) {
+          final String fullName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+          if (fullName.isNotEmpty) {
+            await user.updateDisplayName(fullName);
+            await user.reload();
+          }
+        }
+      }
+
       debugPrint('🔍 Firebase sign-in with Apple successful: ${userCredential.user?.email}');
       
       return userCredential;

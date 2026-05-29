@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,7 +61,30 @@ class _CandidateRegistrationStep1ScreenState
   void _checkAuthState() {
     setState(() {
       _currentUser = FirebaseAuth.instance.currentUser;
+      _populateNameFromCurrentUser();
     });
+  }
+
+  void _populateNameFromCurrentUser() {
+    if (_currentUser != null) {
+      final displayName = _currentUser!.displayName;
+      if (displayName != null && displayName.isNotEmpty && _fullNameController.text.trim().isEmpty) {
+        String nameWithoutTitle = displayName;
+        String foundTitle = 'Mr.';
+        if (displayName.startsWith('Mr. ')) {
+          nameWithoutTitle = displayName.substring(4);
+          foundTitle = 'Mr.';
+        } else if (displayName.startsWith('Miss. ')) {
+          nameWithoutTitle = displayName.substring(6);
+          foundTitle = 'Miss.';
+        } else if (displayName.startsWith('Mrs. ')) {
+          nameWithoutTitle = displayName.substring(5);
+          foundTitle = 'Mrs.';
+        }
+        _fullNameController.text = nameWithoutTitle;
+        _selectedTitle = foundTitle;
+      }
+    }
   }
 
   @override
@@ -103,44 +127,33 @@ class _CandidateRegistrationStep1ScreenState
     }
 
     final mobile = _mobileController.text.trim();
-    if (mobile.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please enter your mobile number'),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+    if (mobile.isNotEmpty) {
+      if (mobile.length != 10) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please enter complete 10-digit mobile number'),
+            backgroundColor: Colors.red.shade400,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-        ),
-      );
-      return false;
-    }
-    if (mobile.length != 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please enter complete 10-digit mobile number'),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+        );
+        return false;
+      }
+      if (!RegExp(r'^[6-9]\d{9}$').hasMatch(mobile)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please enter a valid 10-digit mobile number'),
+            backgroundColor: Colors.red.shade400,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-        ),
-      );
-      return false;
-    }
-    if (!RegExp(r'^[6-9]\d{9}$').hasMatch(mobile)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please enter a valid 10-digit mobile number'),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return false;
+        );
+        return false;
+      }
     }
 
     // Validate age
@@ -189,11 +202,74 @@ class _CandidateRegistrationStep1ScreenState
         setState(() {
           _currentUser = userCredential.user;
           _isSigningIn = false;
+          _populateNameFromCurrentUser();
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Signed in as ${_currentUser!.email}'),
+            backgroundColor: Colors.green.shade400,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      } else {
+        setState(() {
+          _isSigningIn = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSigningIn = false;
+        });
+
+        // Handle existing user scenarios - redirect immediately
+        if (e.toString().contains('EXISTING_USER_COMPLETE:')) {
+          final mobileNumber = e.toString().split(':')[1];
+          _handleExistingCompleteUser(mobileNumber);
+        } else if (e.toString().contains('EXISTING_USER_INCOMPLETE:')) {
+          final mobileNumber = e.toString().split(':')[1];
+          _handleExistingIncompleteUser(mobileNumber);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Sign-in failed: $e'),
+              backgroundColor: Colors.red.shade400,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    setState(() {
+      _isSigningIn = true;
+    });
+
+    try {
+      final UserCredential? userCredential =
+          await AuthService.signInWithAppleForCandidate();
+
+      if (userCredential != null && mounted) {
+        setState(() {
+          _currentUser = userCredential.user;
+          _isSigningIn = false;
+          _populateNameFromCurrentUser();
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Signed in with Apple as ${_currentUser!.email ?? "user"}',
+            ),
             backgroundColor: Colors.green.shade400,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -725,9 +801,59 @@ class _CandidateRegistrationStep1ScreenState
                                         ),
                                       ),
                                     ),
+                                    if (Platform.isIOS) ...[
+                                      const SizedBox(height: 12),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton.icon(
+                                          onPressed: _isSigningIn
+                                              ? null
+                                              : _handleAppleSignIn,
+                                          icon: _isSigningIn
+                                              ? const SizedBox(
+                                                  width: 16,
+                                                  height: 16,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor: AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(Colors.white),
+                                                  ),
+                                                )
+                                              : const Icon(
+                                                Icons.apple,
+                                                size: 24,
+                                                color: Colors.white,
+                                              ),
+                                          label: Text(
+                                            _isSigningIn
+                                                ? 'Signing in...'
+                                                : 'Sign in with Apple',
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                     const SizedBox(height: 8),
                                     Text(
-                                      'You must sign in with Google to continue registration',
+                                      Platform.isIOS
+                                          ? 'You must sign in with Google or Apple to continue registration'
+                                          : 'You must sign in with Google to continue registration',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey.shade600,
@@ -938,20 +1064,11 @@ class _CandidateRegistrationStep1ScreenState
                                 ),
                                 const SizedBox(width: 8),
                                 const Text(
-                                  'Mobile Number',
+                                  'Mobile Number (Optional)',
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: Color(0xFF1F2937),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Text(
-                                  '*',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.red,
                                   ),
                                 ),
                               ],
@@ -1048,17 +1165,15 @@ class _CandidateRegistrationStep1ScreenState
                                       color: Color(0xFF1F2937),
                                     ),
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.trim().isEmpty) {
-                                        return 'Please enter mobile number';
-                                      }
-                                      if (value.length != 10) {
-                                        return 'Mobile number must be 10 digits';
-                                      }
-                                      if (!RegExp(
-                                        r'^[6-9]\d{9}$',
-                                      ).hasMatch(value)) {
-                                        return 'Invalid mobile number';
+                                      if (value != null && value.trim().isNotEmpty) {
+                                        if (value.length != 10) {
+                                          return 'Mobile number must be 10 digits';
+                                        }
+                                        if (!RegExp(
+                                          r'^[6-9]\d{9}$',
+                                        ).hasMatch(value)) {
+                                          return 'Invalid mobile number';
+                                        }
                                       }
                                       return null;
                                     },

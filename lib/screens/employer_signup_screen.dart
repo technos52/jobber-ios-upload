@@ -188,6 +188,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
           _gmailAccount = userCredential.user!.email;
           _gmailVerified = true;
           _isGoogleSigningIn = false;
+          _populateNameFromCurrentUser();
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -227,6 +228,15 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
     }
   }
 
+  void _populateNameFromCurrentUser() {
+    if (_googleUser != null) {
+      final displayName = _googleUser!.displayName;
+      if (displayName != null && displayName.isNotEmpty && _contactPersonController.text.trim().isEmpty) {
+        _contactPersonController.text = displayName;
+      }
+    }
+  }
+
   Future<void> _handleAppleSignIn() async {
     setState(() {
       _isGoogleSigningIn = true;
@@ -250,6 +260,7 @@ class _EmployerSignupScreenState extends State<EmployerSignupScreen>
           _gmailAccount = userCredential.user!.email;
           _gmailVerified = true;
           _isGoogleSigningIn = false;
+          _populateNameFromCurrentUser();
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

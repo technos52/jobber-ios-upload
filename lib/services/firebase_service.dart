@@ -116,11 +116,12 @@ class FirebaseService {
         );
       }
 
-      final mobileNumber = _tempCandidateData!['mobileNumber'] as String;
+      final uid = _tempCandidateData!['uid'] as String;
+      final mobileNumber = _tempCandidateData!['mobileNumber'] as String?;
       final email = _tempCandidateData!['email'] as String;
 
       // Check for email conflicts before saving
-      await _checkCandidateEmailConflicts(email, mobileNumber);
+      await _checkCandidateEmailConflicts(email, uid, mobileNumber);
 
       // Prepare final complete data
       final completeData = Map<String, dynamic>.from(_tempCandidateData!);
@@ -180,10 +181,10 @@ class FirebaseService {
         completeData['noticePeriodText'] = noticePeriodText;
       }
 
-      // Save complete data to Firebase
+      // Save complete data to Firebase using uid as the document ID
       await _firestore
           .collection('candidates')
-          .doc(mobileNumber)
+          .doc(uid)
           .set(completeData);
 
       // Clear temporary data
@@ -199,7 +200,8 @@ class FirebaseService {
   // Check for email conflicts
   static Future<void> _checkCandidateEmailConflicts(
     String email,
-    String mobileNumber,
+    String currentUid,
+    String? currentMobileNumber,
   ) async {
     // Check if email is already used by another candidate
     final candidateQuery = await _firestore
@@ -210,10 +212,23 @@ class FirebaseService {
 
     if (candidateQuery.docs.isNotEmpty) {
       final existingCandidate = candidateQuery.docs.first;
-      if (existingCandidate.id != mobileNumber) {
-        throw Exception(
-          'This email is already registered with another candidate account. Please use a different email address.',
-        );
+      final data = existingCandidate.data();
+      final existingUid = data['uid'] as String?;
+
+      if (existingUid != null) {
+        if (existingUid != currentUid) {
+          throw Exception(
+            'This email is already registered with another candidate account. Please use a different email address.',
+          );
+        }
+      } else {
+        // Fallback for extremely old legacy records where uid is not in document
+        if (existingCandidate.id != currentUid &&
+            (currentMobileNumber == null || existingCandidate.id != currentMobileNumber)) {
+          throw Exception(
+            'This email is already registered with another candidate account. Please use a different email address.',
+          );
+        }
       }
     }
 
@@ -399,14 +414,14 @@ class FirebaseService {
     );
   }
 
-  // Retrieve candidate by mobile number (only completed registrations)
+  // Retrieve candidate by document ID (only completed registrations)
   static Future<Map<String, dynamic>?> getCandidateData(
-    String mobileNumber,
+    String documentId,
   ) async {
     try {
       final doc = await _firestore
           .collection('candidates')
-          .doc(mobileNumber)
+          .doc(documentId)
           .get();
 
       if (doc.exists) {
