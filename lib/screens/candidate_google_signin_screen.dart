@@ -96,7 +96,10 @@ class _CandidateGoogleSignInScreenState
   }
 
   Future<void> _handleAppleSignIn() async {
-    await _handleSignIn(() => AuthService.signInWithAppleForCandidate(), 'Apple');
+    await _handleSignIn(() async {
+      final result = await AuthService.signInWithAppleForCandidate();
+      return result.userCredential;
+    }, 'Apple');
   }
 
   void _handleExistingCompleteUser(String mobileNumber) {

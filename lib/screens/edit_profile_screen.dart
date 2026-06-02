@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +23,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = true;
   bool _isSaving = false;
+
+  bool get _isAppleUser {
+    if (!Platform.isIOS) return false;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+    for (final info in user.providerData) {
+      if (info.providerId == 'apple.com') {
+        return true;
+      }
+    }
+    return false;
+  }
 
   // Controllers
   final _fullNameController = TextEditingController();
@@ -788,6 +801,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _fullNameController,
                         label: 'Full Name',
                         icon: Icons.person_outline,
+                        readOnly: _isAppleUser && _fullNameController.text.trim().isNotEmpty,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your full name';
@@ -800,7 +814,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         label: 'Title',
                         value: _title,
                         items: _titles,
-                        onChanged: (value) => setState(() => _title = value),
+                        onChanged: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                            ? null
+                            : (value) => setState(() => _title = value),
                         icon: Icons.title,
                       ),
                       const SizedBox(height: 16),
@@ -1052,10 +1068,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required IconData icon,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    bool readOnly = false,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: readOnly ? Colors.grey.shade100 : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -1069,15 +1086,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         controller: controller,
         keyboardType: keyboardType,
         validator: validator,
-        style: const TextStyle(
+        readOnly: readOnly,
+        style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: Color(0xFF1F2937),
+          color: readOnly ? Colors.grey.shade700 : const Color(0xFF1F2937),
         ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-          prefixIcon: Icon(icon, color: primaryBlue, size: 22),
+          prefixIcon: Icon(icon, color: readOnly ? Colors.grey : primaryBlue, size: 22),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -1092,12 +1110,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String label,
     required String? value,
     required List<String> items,
-    required Function(String?) onChanged,
+    required ValueChanged<String?>? onChanged,
     required IconData icon,
   }) {
+    final bool disabled = onChanged == null;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: disabled ? Colors.grey.shade100 : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -1110,7 +1129,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Icon(icon, color: primaryBlue, size: 22),
+          Icon(icon, color: disabled ? Colors.grey : primaryBlue, size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: DropdownButtonFormField<String>(
@@ -1129,10 +1148,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   value: item,
                   child: Text(
                     item,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF1F2937),
+                      color: disabled ? Colors.grey.shade700 : const Color(0xFF1F2937),
                     ),
                   ),
                 );

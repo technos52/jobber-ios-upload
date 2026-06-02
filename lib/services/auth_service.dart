@@ -7,6 +7,20 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../utils/user_role_storage.dart';
 import '../firebase_options.dart';
 
+class AppleSignInResult {
+  final UserCredential? userCredential;
+  final String? email;
+  final String? givenName;
+  final String? familyName;
+
+  AppleSignInResult({
+    this.userCredential,
+    this.email,
+    this.givenName,
+    this.familyName,
+  });
+}
+
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -217,7 +231,7 @@ class AuthService {
   // -----------------------------------------------------------------
   // Sign‑in with Apple for candidates
   // -----------------------------------------------------------------
-  static Future<UserCredential?> signInWithAppleForCandidate() async {
+  static Future<AppleSignInResult> signInWithAppleForCandidate() async {
     try {
       debugPrint('🔍 Starting Sign-In with Apple for candidates...');
       
@@ -267,7 +281,12 @@ class AuthService {
         }
       }
 
-      return userCredential;
+      return AppleSignInResult(
+        userCredential: userCredential,
+        email: appleCredential.email,
+        givenName: appleCredential.givenName,
+        familyName: appleCredential.familyName,
+      );
     } on FirebaseAuthException catch (e) {
       debugPrint('🔍 Firebase Auth Error in Apple Sign-In: ${e.code} - ${e.message}');
       if (e.code == 'account-exists-with-different-credential') {

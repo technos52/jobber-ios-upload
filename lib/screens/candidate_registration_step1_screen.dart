@@ -36,6 +36,16 @@ class _CandidateRegistrationStep1ScreenState
   // Firebase Auth fields
   User? _currentUser;
   bool _isSigningIn = false;
+  bool get _isAppleUser {
+    if (!Platform.isIOS) return false;
+    if (_currentUser == null) return false;
+    for (final info in _currentUser!.providerData) {
+      if (info.providerId == 'apple.com') {
+        return true;
+      }
+    }
+    return false;
+  }
 
   static const primaryBlue = Color(0xFF007BFF);
   static const int currentYear = 2025;
@@ -255,13 +265,20 @@ class _CandidateRegistrationStep1ScreenState
     });
 
     try {
-      final UserCredential? userCredential =
+      final AppleSignInResult result =
           await AuthService.signInWithAppleForCandidate();
 
-      if (userCredential != null && mounted) {
+      if (result.userCredential != null && mounted) {
         setState(() {
-          _currentUser = userCredential.user;
+          _currentUser = result.userCredential!.user;
           _isSigningIn = false;
+          
+          if (result.givenName != null || result.familyName != null) {
+            final String appleName = '${result.givenName ?? ""} ${result.familyName ?? ""}'.trim();
+            if (appleName.isNotEmpty) {
+              _fullNameController.text = appleName;
+            }
+          }
           _populateNameFromCurrentUser();
         });
 
@@ -908,20 +925,26 @@ class _CandidateRegistrationStep1ScreenState
                                       width: 1.5,
                                     ),
                                     borderRadius: BorderRadius.circular(12),
-                                    color: Colors.white,
+                                    color: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                        ? const Color(0xFFF3F4F6)
+                                        : Colors.white,
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: _selectedTitle,
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.keyboard_arrow_down_rounded,
                                         size: 20,
-                                        color: Color(0xFF6B7280),
+                                        color: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                            ? Colors.grey.shade400
+                                            : const Color(0xFF6B7280),
                                       ),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
-                                        color: Color(0xFF1F2937),
+                                        color: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                            ? Colors.grey.shade600
+                                            : const Color(0xFF1F2937),
                                       ),
                                       items: ['Mr.', 'Miss.', 'Mrs.']
                                           .map(
@@ -931,11 +954,13 @@ class _CandidateRegistrationStep1ScreenState
                                             ),
                                           )
                                           .toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _selectedTitle = value!;
-                                        });
-                                      },
+                                      onChanged: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                          ? null
+                                          : (value) {
+                                              setState(() {
+                                                _selectedTitle = value!;
+                                              });
+                                            },
                                     ),
                                   ),
                                 ),
@@ -944,6 +969,7 @@ class _CandidateRegistrationStep1ScreenState
                                 Expanded(
                                   child: TextFormField(
                                     controller: _fullNameController,
+                                    readOnly: _isAppleUser && _fullNameController.text.trim().isNotEmpty,
                                     decoration: InputDecoration(
                                       hintText: 'Shailesh Sharma',
                                       hintStyle: TextStyle(
@@ -951,7 +977,9 @@ class _CandidateRegistrationStep1ScreenState
                                         fontSize: 15,
                                       ),
                                       filled: true,
-                                      fillColor: Colors.white,
+                                      fillColor: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                          ? const Color(0xFFF3F4F6)
+                                          : Colors.white,
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: const BorderSide(
@@ -968,9 +996,13 @@ class _CandidateRegistrationStep1ScreenState
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(
-                                          color: primaryBlue,
-                                          width: 2,
+                                        borderSide: BorderSide(
+                                          color: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                              ? const Color(0xFFE5E7EB)
+                                              : primaryBlue,
+                                          width: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                              ? 1.5
+                                              : 2,
                                         ),
                                       ),
                                       contentPadding:
@@ -979,10 +1011,12 @@ class _CandidateRegistrationStep1ScreenState
                                             vertical: 16,
                                           ),
                                     ),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,
-                                      color: Color(0xFF1F2937),
+                                      color: _isAppleUser && _fullNameController.text.trim().isNotEmpty
+                                          ? Colors.grey.shade600
+                                          : const Color(0xFF1F2937),
                                     ),
                                     validator: (value) {
                                       if (value == null ||
