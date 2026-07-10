@@ -521,7 +521,6 @@ class _CandidateGoogleSignInScreenState
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         title: const Text(
           'Sign In',
           style: TextStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
 import '../services/dropdown_service.dart';
+import '../data/locations_data.dart';
 
 class CandidateRegistrationStep3Screen extends StatefulWidget {
   const CandidateRegistrationStep3Screen({super.key});
@@ -21,6 +22,8 @@ class _CandidateRegistrationStep3ScreenState
   final _districtController = TextEditingController();
 
   String? _selectedMaritalStatus;
+  int? _selectedAnnualIncomeLakh;
+  int? _selectedAnnualIncomeThousand;
   bool _currentlyWorking = false;
   int? _selectedNoticePeriod;
   bool _isSubmitting = false;
@@ -40,67 +43,7 @@ class _CandidateRegistrationStep3ScreenState
     'Widowed',
   ];
 
-  static const Map<String, List<String>> _indiaStatesDistricts = {
-    'Andhra Pradesh': [
-      'Visakhapatnam',
-      'Vijayawada',
-      'Guntur',
-      'Nellore',
-      'Tirupati',
-    ],
-    'Maharashtra': [
-      'Mumbai',
-      'Pune',
-      'Nagpur',
-      'Thane',
-      'Nashik',
-      'Aurangabad',
-    ],
-    'Karnataka': ['Bangalore', 'Mysore', 'Hubli', 'Mangalore', 'Belgaum'],
-    'Tamil Nadu': [
-      'Chennai',
-      'Coimbatore',
-      'Madurai',
-      'Tiruchirappalli',
-      'Salem',
-    ],
-    'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar'],
-    'Rajasthan': ['Jaipur', 'Jodhpur', 'Kota', 'Bikaner', 'Udaipur'],
-    'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Asansol', 'Siliguri'],
-    'Madhya Pradesh': ['Indore', 'Bhopal', 'Jabalpur', 'Gwalior', 'Ujjain'],
-    'Uttar Pradesh': [
-      'Lucknow',
-      'Kanpur',
-      'Ghaziabad',
-      'Agra',
-      'Varanasi',
-      'Noida',
-    ],
-    'Delhi': [
-      'Central Delhi',
-      'North Delhi',
-      'South Delhi',
-      'East Delhi',
-      'West Delhi',
-    ],
-    'Punjab': ['Ludhiana', 'Amritsar', 'Jalandhar', 'Patiala', 'Bathinda'],
-    'Haryana': ['Gurgaon', 'Faridabad', 'Panipat', 'Ambala', 'Karnal'],
-    'Bihar': ['Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Purnia'],
-    'Telangana': [
-      'Hyderabad',
-      'Warangal',
-      'Nizamabad',
-      'Karimnagar',
-      'Khammam',
-    ],
-    'Kerala': [
-      'Thiruvananthapuram',
-      'Kochi',
-      'Kozhikode',
-      'Thrissur',
-      'Kollam',
-    ],
-  };
+
 
   static const List<int> _noticePeriods = [7, 15, 30, 45, 60, 90, 180];
 
@@ -132,7 +75,7 @@ class _CandidateRegistrationStep3ScreenState
         });
       }
     } else {
-      final filtered = _indiaStatesDistricts.keys
+      final filtered = districtsByState.keys
           .where((state) => state.toLowerCase().contains(query))
           .toList();
 
@@ -157,7 +100,7 @@ class _CandidateRegistrationStep3ScreenState
         });
       }
     } else {
-      final stateDistricts = _indiaStatesDistricts[selectedState] ?? [];
+      final stateDistricts = districtsByState[selectedState] ?? [];
       final filtered = stateDistricts
           .where((district) => district.toLowerCase().contains(query))
           .toList();
@@ -182,6 +125,20 @@ class _CandidateRegistrationStep3ScreenState
 
   bool _validateForm() {
     if (!_formKey.currentState!.validate()) {
+      return false;
+    }
+
+    if (_selectedAnnualIncomeLakh == null || _selectedAnnualIncomeThousand == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please select annual income'),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
       return false;
     }
 
@@ -261,6 +218,8 @@ class _CandidateRegistrationStep3ScreenState
         maritalStatus: _selectedMaritalStatus!,
         state: _stateController.text.trim(),
         district: _districtController.text.trim(),
+        annualIncomeLakh: _selectedAnnualIncomeLakh,
+        annualIncomeThousand: _selectedAnnualIncomeThousand,
         currentlyWorking: _currentlyWorking,
         noticePeriod: _currentlyWorking ? _selectedNoticePeriod! : 0,
       );
@@ -383,6 +342,8 @@ class _CandidateRegistrationStep3ScreenState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
+                            _buildAnnualIncomeField(),
+                            const SizedBox(height: 24),
                             _buildMaritalStatusField(),
                             const SizedBox(height: 24),
                             _buildStateField(),
@@ -656,6 +617,146 @@ class _CandidateRegistrationStep3ScreenState
             }
             return null;
           },
+        ),
+      ],
+    );
+  }
+  Widget _buildAnnualIncomeField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.currency_rupee, size: 20, color: primaryBlue),
+            const SizedBox(width: 8),
+            const Text(
+              'Annual Income',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Text(
+              '*',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: _selectedAnnualIncomeLakh != null
+                        ? primaryBlue
+                        : const Color(0xFFE5E7EB),
+                    width: _selectedAnnualIncomeLakh != null ? 2 : 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<int>(
+                    value: _selectedAnnualIncomeLakh,
+                    hint: const Text(
+                      'Select',
+                      style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 15),
+                    ),
+                    isExpanded: true,
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xFF6B7280),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF1F2937),
+                    ),
+                    dropdownColor: Colors.white,
+                    items: List.generate(100, (index) => index + 1).map((val) {
+                      return DropdownMenuItem(value: val, child: Text('$val'));
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedAnnualIncomeLakh = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Lakh',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF374151),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: _selectedAnnualIncomeThousand != null
+                        ? primaryBlue
+                        : const Color(0xFFE5E7EB),
+                    width: _selectedAnnualIncomeThousand != null ? 2 : 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<int>(
+                    value: _selectedAnnualIncomeThousand,
+                    hint: const Text(
+                      'Select',
+                      style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 15),
+                    ),
+                    isExpanded: true,
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xFF6B7280),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF1F2937),
+                    ),
+                    dropdownColor: Colors.white,
+                    items: List.generate(100, (index) => index + 1).map((val) {
+                      return DropdownMenuItem(value: val, child: Text('$val'));
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedAnnualIncomeThousand = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Thousand',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF374151),
+              ),
+            ),
+          ],
         ),
       ],
     );

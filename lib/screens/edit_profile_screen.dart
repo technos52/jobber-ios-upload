@@ -723,7 +723,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         title: const Text(
           'Edit Profile',
           style: TextStyle(

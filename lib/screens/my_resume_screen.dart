@@ -53,7 +53,6 @@ class _MyResumeScreenState extends State<MyResumeScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         title: const Text(
           'My Resume',
           style: TextStyle(

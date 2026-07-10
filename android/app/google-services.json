@@ -102,6 +102,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "828440824665-2rokkfdi41lkdb3svuic4b0cari2821u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobopen",
+            "certificate_hash": "ef99b17ab8dfd69ad7e9b0e679bd2fcbdca87395"
+          }
+        },
+        {
           "client_id": "828440824665-a2vqtjqposmhq6dkbdjhlus2tbntva39.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -175,6 +183,14 @@
           "android_info": {
             "package_name": "com.shailesh.alljobsopen",
             "certificate_hash": "281140a332281d657ce7a0177bb6949542706ff7"
+          }
+        },
+        {
+          "client_id": "828440824665-c8k5tenqe2er5a40o5o25ccq2gvm5gao.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shailesh.alljobsopen",
+            "certificate_hash": "ef99b17ab8dfd69ad7e9b0e679bd2fcbdca87395"
           }
         },
         {

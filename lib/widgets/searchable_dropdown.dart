@@ -336,17 +336,18 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
               child: Container(color: Colors.transparent),
             ),
           ),
-          // The actual dropdown using absolute positioning
-          Positioned(
-            left: textFieldPosition.dx,
-            top: shouldShowAbove
-                ? textFieldPosition.dy -
-                      adjustedDropdownHeight +
-                      1 // Show above with 1px overlap
-                : textFieldPosition.dy +
-                      textFieldSize.height -
-                      1, // Show below with 1px overlap
-            width: textFieldSize.width,
+          // The actual dropdown using CompositedTransformFollower to track the input field
+          CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            offset: Offset(
+              0,
+              shouldShowAbove
+                  ? -adjustedDropdownHeight + 1 // Show above with 1px overlap
+                  : textFieldSize.height - 1, // Show below with 1px overlap
+            ),
+            child: SizedBox(
+              width: textFieldSize.width,
             child: Material(
               elevation: 0,
               borderRadius: shouldShowAbove
@@ -459,6 +460,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                       ),
               ),
             ),
+            ),
           ),
         ],
       ),
@@ -541,9 +543,11 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         Row(
           children: [
             if (widget.prefixIcon != null) ...[
@@ -655,6 +659,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
           },
         ),
       ],
+    ),
     );
   }
 }

@@ -14,7 +14,6 @@ class HelpSupportScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         title: const Text(
           'Help & Support',
           style: TextStyle(

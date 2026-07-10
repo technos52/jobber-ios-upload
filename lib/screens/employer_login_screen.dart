@@ -135,7 +135,6 @@ class _EmployerLoginScreenState extends State<EmployerLoginScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         title: const Text(
           'Employer Login',
           style: TextStyle(

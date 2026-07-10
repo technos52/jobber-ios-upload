@@ -15,7 +15,6 @@ class DemoPageScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         title: Text(
           title,
           style: const TextStyle(

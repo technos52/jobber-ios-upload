@@ -260,7 +260,7 @@ class _CandidateJobSearchScreenState extends State<CandidateJobSearchScreen>
               fontWeight: FontWeight.w500,
             ),
             tabs: const [
-              Tab(text: 'All Jobs'),
+              Tab(text: 'All Job'),
               Tab(text: 'Bank/NBFC Jobs'),
               Tab(text: 'Company Jobs'),
             ],

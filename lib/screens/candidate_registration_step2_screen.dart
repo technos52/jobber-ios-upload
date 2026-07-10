@@ -29,7 +29,7 @@ class _CandidateRegistrationStep2ScreenState
   late Animation<double> _fadeAnimation;
 
   final _qualificationController = TextEditingController();
-  final _degreeSpecializationController = TextEditingController();
+
   final _departmentController = TextEditingController();
   final _jobCategoryController = TextEditingController();
   final _jobTypeController = TextEditingController();
@@ -37,8 +37,7 @@ class _CandidateRegistrationStep2ScreenState
   final _companyController = TextEditingController();
 
   String? _selectedQualification;
-  String _degreeSpecialization = '';
-  bool _showDegreeSpecialization = false;
+
   int _experienceYears = 0;
   int _experienceMonths = 0;
   String? _currentlyWorking;
@@ -53,10 +52,12 @@ class _CandidateRegistrationStep2ScreenState
   List<String> _jobTypes = [];
   List<String> _designations = [];
   List<String> _companyTypes = [];
+  List<String> _departments = [];
   String? _selectedCompanyType;
   String? _selectedJobCategory;
   String? _selectedJobType;
   String? _selectedDesignation;
+  String? _selectedDepartment;
 
   static const primaryBlue = Color(0xFF007BFF);
 
@@ -89,6 +90,7 @@ class _CandidateRegistrationStep2ScreenState
         _jobCategories = JobCategoryOptions.values;
         _jobTypes = JobTypeOptions.values;
         _designations = DesignationOptions.values;
+        _departments = ['IT', 'HR', 'Finance', 'Marketing', 'Sales', 'Operations'];
       });
 
       print('✅ Loaded local dropdown options as defaults');
@@ -138,6 +140,21 @@ class _CandidateRegistrationStep2ScreenState
             if (options.containsKey('company_types')) {
               _companyTypes = options['company_types'] ?? [];
             }
+
+            // Departments from Firebase (candidateDepartment or departments key)
+            if (options.containsKey('candidate_departments') &&
+                options['candidate_departments']!.isNotEmpty) {
+              _departments = options['candidate_departments']!;
+              print(
+                '✅ Updated departments from Firebase (candidateDepartment): ${_departments.length} items',
+              );
+            } else if (options.containsKey('departments') &&
+                options['departments']!.isNotEmpty) {
+              _departments = options['departments']!;
+              print(
+                '✅ Updated departments from Firebase: ${_departments.length} items',
+              );
+            }
           });
           print('✅ Loaded Firebase options successfully');
         }
@@ -152,12 +169,24 @@ class _CandidateRegistrationStep2ScreenState
         print('🔄 Loaded ${_companyTypes.length} default company types');
       }
 
+      // Always perform direct Firebase fetch for departments to override static data
+      try {
+        final deptOptions = await DropdownService.getDropdownOptions('department');
+        if (mounted && deptOptions.isNotEmpty) {
+          setState(() => _departments = deptOptions);
+          print('✅ Force loaded departments from Firebase directly: ${_departments.length} items');
+        }
+      } catch (e) {
+        print('⚠️ Could not fetch explicit departments: $e');
+      }
+
       print('🎯 Final dropdown counts:');
       print('- Qualifications: ${_qualifications.length}');
       print('- Job Categories: ${_jobCategories.length}');
       print('- Job Types: ${_jobTypes.length}');
       print('- Designations: ${_designations.length}');
       print('- Company Types: ${_companyTypes.length}');
+      print('- Departments: ${_departments.length}');
     } catch (e) {
       print('❌ Error loading dropdown options: $e');
       if (mounted) {
@@ -168,6 +197,7 @@ class _CandidateRegistrationStep2ScreenState
           _jobTypes = JobTypeOptions.values;
           _designations = DesignationOptions.values;
           _companyTypes = DropdownService.getDefaultOptions('company_types');
+          _departments = DropdownService.getDefaultOptions('departments');
         });
         print('🔄 Using local fallback options');
       }
@@ -207,7 +237,7 @@ class _CandidateRegistrationStep2ScreenState
   void dispose() {
     _fadeController.dispose();
     _qualificationController.dispose();
-    _degreeSpecializationController.dispose();
+
     _departmentController.dispose(); // Keep for backward compatibility
     _jobCategoryController.dispose(); // New job category controller
     _jobTypeController.dispose(); // New job type controller
@@ -235,23 +265,7 @@ class _CandidateRegistrationStep2ScreenState
       return false;
     }
 
-    // Validate degree specialization if any qualification is selected
-    if (_showDegreeSpecialization &&
-        _degreeSpecializationController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Please enter your specialization/field of study',
-          ),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return false;
-    }
+
 
     // Validate notice period if currently working is yes
     if (_currentlyWorking == 'yes' && _selectedNoticePeriod == null) {
@@ -286,26 +300,20 @@ class _CandidateRegistrationStep2ScreenState
       final email = currentUser?.email ?? '';
       final mobileNumber = await _getMobileNumberFromStep1();
 
-      // Prepare qualification string with specialization if applicable
+      // Use qualification directly
       String qualificationToSave = _selectedQualification!;
-      if (_showDegreeSpecialization &&
-          _degreeSpecializationController.text.trim().isNotEmpty) {
-        qualificationToSave =
-            '${_selectedQualification!} (${_degreeSpecializationController.text.trim()})';
-      }
 
       await FirebaseService.updateCandidateStep2Data(
         mobileNumber: mobileNumber,
         qualification: qualificationToSave,
         experienceYears: _experienceYears,
         experienceMonths: _experienceMonths,
-        jobCategory: _selectedJobCategory ?? '', // Use selected dropdown value
-        jobType: _selectedJobType ?? '', // Use selected dropdown value
-        designation: _selectedDesignation ?? '', // Use selected dropdown value
+        jobCategory: _selectedJobCategory ?? '',
+        department: _selectedDepartment ?? '',
+        jobType: _selectedJobType ?? '',
+        designation: _selectedDesignation ?? '',
         companyName: _companyController.text.trim(),
-        companyType:
-            _selectedCompanyType ??
-            '', // Use selected company type from dropdown
+        companyType: _selectedCompanyType ?? '',
         email: email,
         currentlyWorking: _currentlyWorking,
         noticePeriod: _selectedNoticePeriod,
@@ -488,6 +496,8 @@ class _CandidateRegistrationStep2ScreenState
                             const SizedBox(height: 24),
                             _buildJobCategoryField(),
                             const SizedBox(height: 24),
+                            _buildDepartmentField(),
+                            const SizedBox(height: 24),
                             _buildJobTypeField(),
                             const SizedBox(height: 24),
                             _buildDesignationField(),
@@ -652,11 +662,6 @@ class _CandidateRegistrationStep2ScreenState
             setState(() {
               _selectedQualification = value;
               _qualificationController.text = value ?? '';
-              // Show degree specialization field for ANY qualification selected
-              _showDegreeSpecialization = value != null && value.isNotEmpty;
-              if (!_showDegreeSpecialization) {
-                _degreeSpecializationController.clear();
-              }
             });
           },
           validator: (value) {
@@ -666,39 +671,6 @@ class _CandidateRegistrationStep2ScreenState
             return null;
           },
         ),
-        if (_showDegreeSpecialization) ...[
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _degreeSpecializationController,
-            decoration: InputDecoration(
-              labelText: 'Specialization/Field of Study *',
-              hintText:
-                  'e.g., Computer Science, Mechanical Engineering, Commerce',
-              prefixIcon: const Icon(Icons.subject_rounded),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: primaryBlue, width: 2),
-              ),
-              filled: true,
-              fillColor: const Color(0xFFF9FAFB),
-            ),
-            validator: (value) {
-              if (_showDegreeSpecialization &&
-                  (value == null || value.trim().isEmpty)) {
-                return 'Please enter your specialization/field of study';
-              }
-              return null;
-            },
-          ),
-        ],
       ],
     );
   }
@@ -1038,8 +1010,8 @@ class _CandidateRegistrationStep2ScreenState
     return SearchableDropdown(
       value: _selectedJobCategory,
       items: _jobCategories,
-      hintText: 'Select or type department/job category',
-      labelText: 'Department / Job Category *', // Updated label as requested
+      hintText: 'Select or type job category',
+      labelText: 'Job Category *',
       prefixIcon: Icons.category_rounded,
       primaryColor: primaryBlue,
       onChanged: (value) {
@@ -1050,7 +1022,30 @@ class _CandidateRegistrationStep2ScreenState
       },
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
-          return 'Please select your department/job category';
+          return 'Please select your job category';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDepartmentField() {
+    return SearchableDropdown(
+      value: _selectedDepartment,
+      items: _departments,
+      hintText: 'Select or type department',
+      labelText: 'Department *',
+      prefixIcon: Icons.apartment_rounded,
+      primaryColor: primaryBlue,
+      onChanged: (value) {
+        setState(() {
+          _selectedDepartment = value;
+          _departmentController.text = value ?? '';
+        });
+      },
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Please select your department';
         }
         return null;
       },

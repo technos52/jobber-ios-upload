@@ -53,6 +53,7 @@ class FirebaseService {
     required int experienceYears,
     required int experienceMonths,
     required String jobCategory,
+    required String department,
     required String jobType,
     required String designation,
     required String companyName,
@@ -76,6 +77,7 @@ class FirebaseService {
         'experienceYears': experienceYears,
         'experienceMonths': experienceMonths,
         'jobCategory': jobCategory,
+        'department': department,
         'jobType': jobType,
         'designation': designation,
         'companyName': companyName,
@@ -104,6 +106,8 @@ class FirebaseService {
     required String maritalStatus,
     required String state,
     required String district,
+    int? annualIncomeLakh,
+    int? annualIncomeThousand,
     bool? currentlyWorking,
     int? noticePeriod,
   }) async {
@@ -151,6 +155,13 @@ class FirebaseService {
         'updatedAt': FieldValue.serverTimestamp(),
         'step': 3,
       });
+
+      if (annualIncomeLakh != null) {
+        completeData['annualIncomeLakh'] = annualIncomeLakh;
+      }
+      if (annualIncomeThousand != null) {
+        completeData['annualIncomeThousand'] = annualIncomeThousand;
+      }
 
       if (currentlyWorking != null) {
         completeData['currentlyWorking'] = currentlyWorking;
@@ -374,6 +385,7 @@ class FirebaseService {
     required int experienceYears,
     required int experienceMonths,
     required String jobCategory,
+    required String department,
     required String jobType,
     required String designation,
     required String companyName,
@@ -387,6 +399,7 @@ class FirebaseService {
       experienceYears: experienceYears,
       experienceMonths: experienceMonths,
       jobCategory: jobCategory,
+      department: department,
       jobType: jobType,
       designation: designation,
       companyName: companyName,
@@ -402,6 +415,8 @@ class FirebaseService {
     required String maritalStatus,
     required String state,
     required String district,
+    int? annualIncomeLakh,
+    int? annualIncomeThousand,
     bool? currentlyWorking,
     int? noticePeriod,
   }) async {
@@ -409,6 +424,8 @@ class FirebaseService {
       maritalStatus: maritalStatus,
       state: state,
       district: district,
+      annualIncomeLakh: annualIncomeLakh,
+      annualIncomeThousand: annualIncomeThousand,
       currentlyWorking: currentlyWorking,
       noticePeriod: noticePeriod,
     );

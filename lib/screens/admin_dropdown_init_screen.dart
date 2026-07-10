@@ -119,6 +119,40 @@ class _AdminDropdownInitScreenState extends State<AdminDropdownInitScreen> {
                     ),
             ),
             const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _isInitializing ? null : _pushDesignations,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: _isInitializing
+                  ? const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Text('Updating...'),
+                      ],
+                    )
+                  : const Text(
+                      '🔄 Update Designations in Firebase',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+            const SizedBox(height: 16),
             if (_status.isNotEmpty)
               Container(
                 padding: const EdgeInsets.all(16),
@@ -240,6 +274,29 @@ class _AdminDropdownInitScreenState extends State<AdminDropdownInitScreen> {
     } catch (e) {
       setState(() {
         _status = 'Error: Failed to initialize dropdown data.\n\n$e';
+      });
+    } finally {
+      setState(() {
+        _isInitializing = false;
+      });
+    }
+  }
+
+  Future<void> _pushDesignations() async {
+    setState(() {
+      _isInitializing = true;
+      _status = '';
+    });
+
+    try {
+      await DropdownMigrationHelper.pushDesignationsToFirebase();
+      setState(() {
+        _status =
+            '✅ Success! Designation dropdown has been updated in Firebase.\n\n42 designations are now live in dropdown_options/designation.\n\nAll users will see the updated list next time they open the Designation dropdown.';
+      });
+    } catch (e) {
+      setState(() {
+        _status = 'Error: Failed to update designations.\n\n$e';
       });
     } finally {
       setState(() {

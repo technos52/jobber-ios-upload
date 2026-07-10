@@ -129,37 +129,48 @@ class DropdownMigrationHelper {
         'Other',
       ],
       'designations': [
-        'Software Engineer',
-        'Senior Software Engineer',
-        'Team Lead',
-        'Project Manager',
-        'Business Analyst',
-        'HR Executive',
-        'HR Manager',
-        'Marketing Executive',
-        'Marketing Manager',
-        'Sales Executive',
-        'Sales Manager',
-        'Customer Support Executive',
-        'Customer Support Manager',
-        'Finance Executive',
-        'Accountant',
-        'Operations Executive',
-        'Operations Manager',
-        'Data Analyst',
-        'Data Scientist',
-        'UI/UX Designer',
-        'Graphic Designer',
-        'Content Writer',
-        'Digital Marketing Executive',
-        'SEO Specialist',
-        'Quality Analyst',
-        'Business Development Executive',
-        'Administrative Assistant',
-        'Office Manager',
-        'Intern',
         'Trainee',
-        'Other',
+        'Apprentice',
+        'DET (Diploma Engineer Trainee)',
+        'GET (Graduate Engineer Trainee)',
+        'Operator',
+        'Technician',
+        'Senior Technician',
+        'Team Leader',
+        'Line Leader',
+        'Analyst',
+        'Specialist',
+        'Coordinator',
+        'Planner',
+        'Inspector',
+        'Auditor',
+        'Supervisor',
+        'Executive',
+        'Senior Executive',
+        'Shift Incharge',
+        'Junior Engineer',
+        'Engineer',
+        'Senior Engineer',
+        'Assistant Manager',
+        'Deputy Manager',
+        'Manager',
+        'Senior Manager',
+        'AGM (Assistant General Manager)',
+        'DGM (Deputy General Manager)',
+        'General Manager (GM)',
+        'Plant Head',
+        'Unit Head',
+        'Functional Head',
+        'Director',
+        'Vice President (VP)',
+        'Senior Vice President (SVP)',
+        'Chief Executive Officer (CEO)',
+        'Chief Operating Officer (COO)',
+        'Chief Financial Officer (CFO)',
+        'Chief Technology Officer (CTO)',
+        'President',
+        'Managing Director (MD)',
+        'Other Designation',
       ],
       'company_types': [
         'Startup (1-50 employees)',
@@ -327,6 +338,81 @@ class DropdownMigrationHelper {
       print('Updated $category with ${newOptions.length} options');
     } catch (e) {
       print('Error updating category: $e');
+      rethrow;
+    }
+  }
+
+  /// Directly push updated designations to Firebase dropdown_options collection
+  static Future<void> pushDesignationsToFirebase() async {
+    const updatedDesignations = [
+      'Trainee',
+      'Apprentice',
+      'DET (Diploma Engineer Trainee)',
+      'GET (Graduate Engineer Trainee)',
+      'Operator',
+      'Technician',
+      'Senior Technician',
+      'Team Leader',
+      'Line Leader',
+      'Analyst',
+      'Specialist',
+      'Coordinator',
+      'Planner',
+      'Inspector',
+      'Auditor',
+      'Supervisor',
+      'Executive',
+      'Senior Executive',
+      'Shift Incharge',
+      'Junior Engineer',
+      'Engineer',
+      'Senior Engineer',
+      'Assistant Manager',
+      'Deputy Manager',
+      'Manager',
+      'Senior Manager',
+      'AGM (Assistant General Manager)',
+      'DGM (Deputy General Manager)',
+      'General Manager (GM)',
+      'Plant Head',
+      'Unit Head',
+      'Functional Head',
+      'Director',
+      'Vice President (VP)',
+      'Senior Vice President (SVP)',
+      'Chief Executive Officer (CEO)',
+      'Chief Operating Officer (COO)',
+      'Chief Financial Officer (CFO)',
+      'Chief Technology Officer (CTO)',
+      'President',
+      'Managing Director (MD)',
+      'Other Designation',
+    ];
+
+    try {
+      // Update new-structure document: dropdown_options/designation
+      await _firestore.collection('dropdown_options').doc('designation').set({
+        'options': updatedDesignations,
+        'updated_at': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      print('✅ dropdown_options/designation updated: ${updatedDesignations.length} items');
+
+      // Also update old-structure for backward compatibility
+      try {
+        await _firestore
+            .collection('admin_settings')
+            .doc('dropdown_management')
+            .update({
+          'candidate_registration.designations': updatedDesignations,
+          'updated_at': FieldValue.serverTimestamp(),
+        });
+        print('✅ admin_settings/dropdown_management designations updated');
+      } catch (_) {
+        // Old structure may not exist — that's fine
+        print('ℹ️ Old structure not found, skipping admin_settings update');
+      }
+    } catch (e) {
+      print('❌ Error pushing designations to Firebase: $e');
       rethrow;
     }
   }

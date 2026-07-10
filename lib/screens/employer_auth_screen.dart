@@ -16,7 +16,6 @@ class EmployerAuthScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
       ),
       body: Stack(
         children: [

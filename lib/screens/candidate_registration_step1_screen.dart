@@ -696,192 +696,6 @@ class _CandidateRegistrationStep1ScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Google Sign-In Section
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              margin: const EdgeInsets.only(bottom: 24),
-                              decoration: BoxDecoration(
-                                color: _currentUser != null
-                                    ? Colors.green.shade50
-                                    : Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: _currentUser != null
-                                      ? Colors.green.shade200
-                                      : Colors.blue.shade200,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        _currentUser != null
-                                            ? Icons.check_circle_rounded
-                                            : Icons.login_rounded,
-                                        color: _currentUser != null
-                                            ? Colors.green.shade600
-                                            : primaryBlue,
-                                        size: 24,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              _currentUser != null
-                                                  ? 'Signed in as:'
-                                                  : 'Sign in Required',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: _currentUser != null
-                                                    ? Colors.green.shade700
-                                                    : primaryBlue,
-                                              ),
-                                            ),
-                                            if (_currentUser != null) ...[
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                _currentUser!.email ??
-                                                    'No email',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.green.shade600,
-                                                ),
-                                              ),
-                                            ],
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (_currentUser == null) ...[
-                                    const SizedBox(height: 16),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton.icon(
-                                        onPressed: _isSigningIn
-                                            ? null
-                                            : _handleGoogleSignIn,
-                                        icon: _isSigningIn
-                                            ? SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                        Color
-                                                      >(Colors.white),
-                                                ),
-                                              )
-                                            : Image.asset(
-                                                'assets/google_logo.png',
-                                                height: 20,
-                                                width: 20,
-                                                errorBuilder:
-                                                    (
-                                                      context,
-                                                      error,
-                                                      stackTrace,
-                                                    ) => const Icon(
-                                                      Icons
-                                                          .g_mobiledata_rounded,
-                                                      size: 24,
-                                                      color: Colors.white,
-                                                    ),
-                                              ),
-                                        label: Text(
-                                          _isSigningIn
-                                              ? 'Signing in...'
-                                              : 'Sign in with Google',
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: primaryBlue,
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    if (Platform.isIOS) ...[
-                                      const SizedBox(height: 12),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton.icon(
-                                          onPressed: _isSigningIn
-                                              ? null
-                                              : _handleAppleSignIn,
-                                          icon: _isSigningIn
-                                              ? const SizedBox(
-                                                  width: 16,
-                                                  height: 16,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    valueColor: AlwaysStoppedAnimation<
-                                                      Color
-                                                    >(Colors.white),
-                                                  ),
-                                                )
-                                              : const Icon(
-                                                Icons.apple,
-                                                size: 24,
-                                                color: Colors.white,
-                                              ),
-                                          label: Text(
-                                            _isSigningIn
-                                                ? 'Signing in...'
-                                                : 'Sign in with Apple',
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.black,
-                                            foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      Platform.isIOS
-                                          ? 'You must sign in with Google or Apple to continue registration'
-                                          : 'You must sign in with Google to continue registration',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-
                             // Full Name with Title
                             Row(
                               children: [
@@ -1394,6 +1208,192 @@ class _CandidateRegistrationStep1ScreenState
 
                             const SizedBox(height: 20),
 
+                            // Google Sign-In Section
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                color: _currentUser != null
+                                    ? Colors.green.shade50
+                                    : Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: _currentUser != null
+                                      ? Colors.green.shade200
+                                      : Colors.blue.shade200,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        _currentUser != null
+                                            ? Icons.check_circle_rounded
+                                            : Icons.login_rounded,
+                                        color: _currentUser != null
+                                            ? Colors.green.shade600
+                                            : primaryBlue,
+                                        size: 24,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _currentUser != null
+                                                  ? 'Signed in as:'
+                                                  : 'Sign in Required',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: _currentUser != null
+                                                    ? Colors.green.shade700
+                                                    : primaryBlue,
+                                              ),
+                                            ),
+                                            if (_currentUser != null) ...[
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                _currentUser!.email ??
+                                                    'No email',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.green.shade600,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (_currentUser == null) ...[
+                                    const SizedBox(height: 16),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton.icon(
+                                        onPressed: _isSigningIn
+                                            ? null
+                                            : _handleGoogleSignIn,
+                                        icon: _isSigningIn
+                                            ? SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                        Color
+                                                      >(Colors.white),
+                                                ),
+                                              )
+                                            : Image.asset(
+                                                'assets/google_logo.png',
+                                                height: 20,
+                                                width: 20,
+                                                errorBuilder:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) => const Icon(
+                                                      Icons
+                                                          .g_mobiledata_rounded,
+                                                      size: 24,
+                                                      color: Colors.white,
+                                                    ),
+                                              ),
+                                        label: Text(
+                                          _isSigningIn
+                                              ? 'Signing in...'
+                                              : 'Sign in with Google',
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: primaryBlue,
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if (Platform.isIOS) ...[
+                                      const SizedBox(height: 12),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton.icon(
+                                          onPressed: _isSigningIn
+                                              ? null
+                                              : _handleAppleSignIn,
+                                          icon: _isSigningIn
+                                              ? const SizedBox(
+                                                  width: 16,
+                                                  height: 16,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor: AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(Colors.white),
+                                                  ),
+                                                )
+                                              : const Icon(
+                                                Icons.apple,
+                                                size: 24,
+                                                color: Colors.white,
+                                              ),
+                                          label: Text(
+                                            _isSigningIn
+                                                ? 'Signing in...'
+                                                : 'Sign in with Apple',
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      Platform.isIOS
+                                          ? 'You must sign in with Google or Apple to continue registration'
+                                          : 'You must sign in with Google to continue registration',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+
                             // Age confirmation checkbox
                             InkWell(
                               onTap: () {
@@ -1560,14 +1560,17 @@ class _CandidateRegistrationStep1ScreenState
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Text(
-                                          _currentUser == null
-                                              ? 'Sign in Required'
-                                              : 'Next',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            letterSpacing: 0.3,
+                                        Flexible(
+                                          child: Text(
+                                            _currentUser == null
+                                                ? 'Sign in Required'
+                                                : 'Next',
+                                            style: TextStyle(
+                                              fontSize: 15, // slightly smaller
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.3,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         SizedBox(width: 8),
