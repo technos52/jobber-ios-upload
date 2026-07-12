@@ -22,8 +22,8 @@ class _CandidateRegistrationStep3ScreenState
   final _districtController = TextEditingController();
 
   String? _selectedMaritalStatus;
-  int? _selectedAnnualIncomeLakh;
-  int? _selectedAnnualIncomeThousand;
+  int? _selectedAnnualSalaryLakh;
+  int? _selectedAnnualSalaryThousand;
   bool _currentlyWorking = false;
   int? _selectedNoticePeriod;
   bool _isSubmitting = false;
@@ -128,10 +128,10 @@ class _CandidateRegistrationStep3ScreenState
       return false;
     }
 
-    if (_selectedAnnualIncomeLakh == null || _selectedAnnualIncomeThousand == null) {
+    if (_selectedAnnualSalaryLakh == null || _selectedAnnualSalaryThousand == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please select annual income'),
+          content: const Text('Please select annual salary'),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -218,8 +218,8 @@ class _CandidateRegistrationStep3ScreenState
         maritalStatus: _selectedMaritalStatus!,
         state: _stateController.text.trim(),
         district: _districtController.text.trim(),
-        annualIncomeLakh: _selectedAnnualIncomeLakh,
-        annualIncomeThousand: _selectedAnnualIncomeThousand,
+        annualSalaryLakh: _selectedAnnualSalaryLakh,
+        annualSalaryThousand: _selectedAnnualSalaryThousand,
         currentlyWorking: _currentlyWorking,
         noticePeriod: _currentlyWorking ? _selectedNoticePeriod! : 0,
       );
@@ -342,7 +342,7 @@ class _CandidateRegistrationStep3ScreenState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
-                            _buildAnnualIncomeField(),
+                            _buildAnnualSalaryField(),
                             const SizedBox(height: 24),
                             _buildMaritalStatusField(),
                             const SizedBox(height: 24),
@@ -621,7 +621,7 @@ class _CandidateRegistrationStep3ScreenState
       ],
     );
   }
-  Widget _buildAnnualIncomeField() {
+  Widget _buildAnnualSalaryField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -630,7 +630,7 @@ class _CandidateRegistrationStep3ScreenState
             Icon(Icons.currency_rupee, size: 20, color: primaryBlue),
             const SizedBox(width: 8),
             const Text(
-              'Annual Income',
+              'Annual Salary',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -655,10 +655,10 @@ class _CandidateRegistrationStep3ScreenState
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: _selectedAnnualIncomeLakh != null
+                    color: _selectedAnnualSalaryLakh != null
                         ? primaryBlue
                         : const Color(0xFFE5E7EB),
-                    width: _selectedAnnualIncomeLakh != null ? 2 : 1.5,
+                    width: _selectedAnnualSalaryLakh != null ? 2 : 1.5,
                   ),
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.white,
@@ -666,7 +666,7 @@ class _CandidateRegistrationStep3ScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<int>(
-                    value: _selectedAnnualIncomeLakh,
+                    value: _selectedAnnualSalaryLakh,
                     hint: const Text(
                       'Select',
                       style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 15),
@@ -687,7 +687,7 @@ class _CandidateRegistrationStep3ScreenState
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedAnnualIncomeLakh = value;
+                        _selectedAnnualSalaryLakh = value;
                       });
                     },
                   ),
@@ -708,10 +708,10 @@ class _CandidateRegistrationStep3ScreenState
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: _selectedAnnualIncomeThousand != null
+                    color: _selectedAnnualSalaryThousand != null
                         ? primaryBlue
                         : const Color(0xFFE5E7EB),
-                    width: _selectedAnnualIncomeThousand != null ? 2 : 1.5,
+                    width: _selectedAnnualSalaryThousand != null ? 2 : 1.5,
                   ),
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.white,
@@ -719,7 +719,7 @@ class _CandidateRegistrationStep3ScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<int>(
-                    value: _selectedAnnualIncomeThousand,
+                    value: _selectedAnnualSalaryThousand,
                     hint: const Text(
                       'Select',
                       style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 15),
@@ -740,7 +740,7 @@ class _CandidateRegistrationStep3ScreenState
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedAnnualIncomeThousand = value;
+                        _selectedAnnualSalaryThousand = value;
                       });
                     },
                   ),

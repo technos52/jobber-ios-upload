@@ -106,8 +106,8 @@ class FirebaseService {
     required String maritalStatus,
     required String state,
     required String district,
-    int? annualIncomeLakh,
-    int? annualIncomeThousand,
+    int? annualSalaryLakh,
+    int? annualSalaryThousand,
     bool? currentlyWorking,
     int? noticePeriod,
   }) async {
@@ -156,11 +156,11 @@ class FirebaseService {
         'step': 3,
       });
 
-      if (annualIncomeLakh != null) {
-        completeData['annualIncomeLakh'] = annualIncomeLakh;
+      if (annualSalaryLakh != null) {
+        completeData['annualSalaryLakh'] = annualSalaryLakh;
       }
-      if (annualIncomeThousand != null) {
-        completeData['annualIncomeThousand'] = annualIncomeThousand;
+      if (annualSalaryThousand != null) {
+        completeData['annualSalaryThousand'] = annualSalaryThousand;
       }
 
       if (currentlyWorking != null) {
@@ -415,8 +415,8 @@ class FirebaseService {
     required String maritalStatus,
     required String state,
     required String district,
-    int? annualIncomeLakh,
-    int? annualIncomeThousand,
+    int? annualSalaryLakh,
+    int? annualSalaryThousand,
     bool? currentlyWorking,
     int? noticePeriod,
   }) async {
@@ -424,8 +424,8 @@ class FirebaseService {
       maritalStatus: maritalStatus,
       state: state,
       district: district,
-      annualIncomeLakh: annualIncomeLakh,
-      annualIncomeThousand: annualIncomeThousand,
+      annualSalaryLakh: annualSalaryLakh,
+      annualSalaryThousand: annualSalaryThousand,
       currentlyWorking: currentlyWorking,
       noticePeriod: noticePeriod,
     );

@@ -36,8 +36,8 @@ class _CandidateRegistrationStep3ScreenState
   // Dynamic dropdown options from Firebase
   bool _isSubmitting = false;
   
-  int? _selectedAnnualIncomeLakh;
-  int? _selectedAnnualIncomeThousand;
+  int? _selectedAnnualSalaryLakh;
+  int? _selectedAnnualSalaryThousand;
 
   static const primaryBlue = Color(0xFF007BFF);
 
@@ -145,8 +145,8 @@ class _CandidateRegistrationStep3ScreenState
       return false;
     }
 
-    if (_selectedAnnualIncomeLakh == null || _selectedAnnualIncomeThousand == null) {
-      _showErrorSnackBar('Please select annual income');
+    if (_selectedAnnualSalaryLakh == null || _selectedAnnualSalaryThousand == null) {
+      _showErrorSnackBar('Please select annual salary');
       return false;
     }
 
@@ -193,8 +193,8 @@ class _CandidateRegistrationStep3ScreenState
 
       await FirebaseService.updateCandidateStep3Data(
         mobileNumber: mobileNumber,
-        annualIncomeLakh: _selectedAnnualIncomeLakh!,
-        annualIncomeThousand: _selectedAnnualIncomeThousand!,
+        annualSalaryLakh: _selectedAnnualSalaryLakh!,
+        annualSalaryThousand: _selectedAnnualSalaryThousand!,
         maritalStatus: _selectedMaritalStatus.value!,
         state: _stateController.text.trim(),
         district: _districtController.text.trim(),
@@ -319,7 +319,7 @@ class _CandidateRegistrationStep3ScreenState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 20),
-                              _buildAnnualIncomeField(),
+                              _buildAnnualSalaryField(),
                               const SizedBox(height: 24),
                               _buildMaritalStatusField(),
                               const SizedBox(height: 24),
@@ -513,7 +513,7 @@ class _CandidateRegistrationStep3ScreenState
     );
   }
 
-  Widget _buildAnnualIncomeField() {
+  Widget _buildAnnualSalaryField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -522,7 +522,7 @@ class _CandidateRegistrationStep3ScreenState
             Icon(Icons.currency_rupee, size: 20, color: primaryBlue),
             const SizedBox(width: 8),
             const Text(
-              'Annual Income',
+              'Annual Salary',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -557,7 +557,7 @@ class _CandidateRegistrationStep3ScreenState
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<int>(
-                    value: _selectedAnnualIncomeLakh,
+                    value: _selectedAnnualSalaryLakh,
                     isExpanded: true,
                     decoration: InputDecoration(
                       hintText: 'Select',
@@ -589,7 +589,7 @@ class _CandidateRegistrationStep3ScreenState
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedAnnualIncomeLakh = value;
+                        _selectedAnnualSalaryLakh = value;
                       });
                     },
                   ),
@@ -611,7 +611,7 @@ class _CandidateRegistrationStep3ScreenState
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<int>(
-                    value: _selectedAnnualIncomeThousand,
+                    value: _selectedAnnualSalaryThousand,
                     isExpanded: true,
                     decoration: InputDecoration(
                       hintText: 'Select',
@@ -643,7 +643,7 @@ class _CandidateRegistrationStep3ScreenState
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedAnnualIncomeThousand = value;
+                        _selectedAnnualSalaryThousand = value;
                       });
                     },
                   ),
