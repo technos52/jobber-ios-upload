@@ -30,7 +30,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBGvZC6OrdqBPvrMiO-WgCWUD0bV0Ox_Lg',
-    appId: '1:828440824665:android:b674b630030d2ff7a4da48',
+    appId: '1:828440824665:android:681d4d6c2af7017ea4da48',
     messagingSenderId: '828440824665',
     projectId: 'jobease-edevs',
     storageBucket: 'jobease-edevs.firebasestorage.app',
